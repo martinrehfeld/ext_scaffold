@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title><%= controller_class_name %>: <%%= controller.action_name %></title>
+  <%%= stylesheet_link_tag 'ext_scaffold' %>
+  <%%= stylesheet_link_tag "../javascripts/ext/resources/css/ext-all.css" %>
+  <%%= javascript_include_tag :defaults %>
+  <%%= javascript_include_tag "ext/adapter/prototype/ext-prototype-adapter.js" %>
+  <%%= javascript_include_tag "ext/ext-all-debug.js" %>
+  <%%= javascript_include_tag "ext/source/locale/ext-lang-en.js" %>
+</head>
+<body>
+
+<!-- TODO: integrate flash messages into Ext Grid (vanishing after delay?) -->
+<p style="color: green"><%%= flash[:notice] %></p>
+
+<%%= yield  %>
+
+</body>
+</html>

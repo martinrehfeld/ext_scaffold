@@ -1,0 +1,17 @@
+<!-- TODO: add field type (i.e. :xtype => :textarea) to ext_field call
+ attribute.field_type will return any of
+
+    when :integer, :float, :decimal   then :text_field
+    when :datetime, :timestamp, :time then :datetime_select
+    when :date                        then :date_select
+    when :string                      then :text_field
+    when :text                        then :text_area
+    when :boolean                     then :check_box
+    else
+         :text_field
+-->
+<%% javascript_tag do -%>
+  var <%%= "#{form_items}" %> = [
+<%= attributes.collect {|attribute| "    <%= ext_field(:field_label => '#{attribute.column.human_name}', :name => '#{singular_name}[#{attribute.name}]') " + "%" + ">" }.join(",\n") %>
+  ];
+<%% end -%>
