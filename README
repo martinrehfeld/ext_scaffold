@@ -31,6 +31,12 @@ and unzip it into `#{RAILS_ROOT}/public/javascripts`. Ext_scaffold was tested
 against version 2.0 of the Ext framework.
 
 
+Installation
+============
+
+`script/plugin install http://rug-b.rubyforge.org/svn/ext_scaffold`
+
+
 Example
 =======
 
