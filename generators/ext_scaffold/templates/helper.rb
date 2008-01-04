@@ -175,7 +175,7 @@ module <%= controller_class_name %>Helper
       'datetime_select' => 'textfield', # TODO: add custom datetime class for this to Ext
       'date_select'     => 'datefield',
       'text_area'       => 'textarea',
-      'check_box'       => 'textfield'  # TODO: provide checkbox that posts value if unchecked and uses 0|1 as values instead of off|on
+      'check_box'       => 'checkbox'  # TODO: provide checkbox that posts value if unchecked and uses 0|1 as values instead of off|on
     }
     options[:xtype] = rails_to_ext_field_types[options[:xtype].to_s] || options[:xtype]
     js =  "{"
