@@ -43,7 +43,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   # PUT /<%= table_name %>/1
   def update
     respond_to do |format|
-      if @<%= file_name %>.update_attributes(params[:@<%= file_name %>])
+      if @<%= file_name %>.update_attributes(params[:<%= file_name %>])
         flash[:notice] = '<%= class_name %> was successfully updated.' # TODO: how to handle flash apropriately
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
