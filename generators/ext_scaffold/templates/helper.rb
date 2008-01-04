@@ -187,6 +187,15 @@ module <%= controller_class_name %>Helper
     js << "  inputValue: '1'," if options[:xtype] == 'checkbox'
     js << "  name: '#{options[:name]}'"
     js << "}"
+    if options[:xtype] == 'checkbox'
+      js << ",{"
+      js << "  xtype: 'hidden',"
+      js << "  value: '0',"
+      js << "  name: '#{options[:name]}'"
+      js << " }"
+    end
+    
+    js
   end
 
   private
