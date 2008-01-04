@@ -184,6 +184,7 @@ module <%= controller_class_name %>Helper
     js << "  vtype: '#{options[:vtype]}'," if options[:vtype]
     js << "  xtype: '#{options[:xtype]}'," if options[:xtype]
     js << "  format: 'Y/m/d'," if options[:xtype] == 'datefield'
+    js << "  inputValue: '1'," if options[:xtype] == 'checkbox'
     js << "  name: '#{options[:name]}'"
     js << "}"
   end
