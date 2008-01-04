@@ -170,6 +170,14 @@ module <%= controller_class_name %>Helper
   # TODO: check possible refactoring into ext_form_items_for + private ext_field method
   #       (similar to ext_datastore_for)
   def ext_field(options)
+    rails_to_ext_field_types = {
+      'text_field'      => 'textfield',
+      'datetime_select' => 'textfield', # TODO: add custom datetime class for this to Ext
+      'date_select'     => 'datefield',
+      'text_area'       => 'textarea',
+      'check_box'       => 'checkbox'
+    }
+    options[:xtype] = rails_to_ext_field_types[options[:xtype].to_s] || options[:xtype]
     js =  "{"
     js << "  fieldLabel: '#{options[:field_label]}',"
     js << "  allowBlank: #{options[:allow_blank] == false ? 'false' : 'true'}," if options[:allow_blank]
