@@ -193,7 +193,7 @@ module <%= controller_class_name %>Helper
     def attribute_mappings_for(object_name, options = {})
       object_class = object_name.to_s.classify.constantize
       requested_attributes = object_class.column_names.reject {|c| options[:skip_id] && c == object_class.primary_key}
-      requested_attributes.collect {|c| "{name: '#{object_name}[#{c}]', mapping: '#{c.dasherize}'}" }.join(',')
+      requested_attributes.collect {|c| "{name: '#{object_name}[#{c}]', mapping: '#{c}'}" }.join(',')
     end
 
     def ext_button(options)
