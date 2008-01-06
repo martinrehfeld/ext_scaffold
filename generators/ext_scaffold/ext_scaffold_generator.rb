@@ -57,7 +57,7 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       m.template('style.css', 'public/stylesheets/ext_scaffold.css')
       
       # Custom JavaScript
-      m.file('ext_datetime.css', 'public/javascripts/ext_datetime.js')
+      m.file('ext_datetime.js', 'public/javascripts/ext_datetime.js')
       m.file('images/arrowLeft.gif', 'public/images/ext_scaffold/arrowLeft.gif')
       m.file('images/arrowRight.gif', 'public/images/ext_scaffold/arrowRight.gif')
 
