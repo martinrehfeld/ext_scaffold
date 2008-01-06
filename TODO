@@ -1,0 +1,4 @@
+* move helper methods into general custom helper (instead of one helper per model)
+* handle display of flash
+* always jump to page with the newly added or updated record when submitting forms
+

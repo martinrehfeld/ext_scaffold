@@ -22,7 +22,7 @@ Prerequisites:
 
 		`http://extjs.com/download`,
 
-		and unzip it into `#{RAILS_ROOT}/public`. Ext_scaffold was
+		and unzip it into `#{RAILS_ROOT}/public/ext`. Ext_scaffold was
 		tested against version 2.0 of the Ext framework.
 
 Examples:
