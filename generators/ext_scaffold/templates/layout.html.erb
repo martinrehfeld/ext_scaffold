@@ -17,12 +17,12 @@
 
 <div style="padding-left:20px">
 <div style="height:20px">
-<p style="color: green" id="flash-message"><%= flash[:notice] %></p>
-<% javascript_tag do -%>
+<p style="color: green" id="flash-message"><%%= flash[:notice] %></p>
+<%% javascript_tag do -%>
   setTimeout(function() { new Effect.Fade("flash-message",{}); }, 2000);
-<% end -%>
+<%% end -%>
 </div>
-<%= yield  %>
+<%%= yield  %>
 </div>
 
 </body>
