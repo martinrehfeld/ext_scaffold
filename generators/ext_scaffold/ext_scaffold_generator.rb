@@ -43,6 +43,7 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       m.directory(File.join('app/views/layouts', controller_class_path))
       m.directory(File.join('test/functional', controller_class_path))
       m.directory(File.join('test/unit', class_path))
+      m.directory('public/images/ext_scaffold')
 
       for action in scaffold_views
         m.template(
@@ -54,6 +55,11 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       # Layout and stylesheet.
       m.template('layout.html.erb', File.join('app/views/layouts', controller_class_path, "#{controller_file_name}.html.erb"))
       m.template('style.css', 'public/stylesheets/ext_scaffold.css')
+      
+      # Custom JavaScript
+      m.file('ext_datetime.css', 'public/javascripts/ext_datetime.js')
+      m.file('images/arrowLeft.gif', 'public/images/ext_scaffold/arrowLeft.gif')
+      m.file('images/arrowRight.gif', 'public/images/ext_scaffold/arrowRight.gif')
 
       m.dependency 'model', [name] + @args, :collision => :skip
 
