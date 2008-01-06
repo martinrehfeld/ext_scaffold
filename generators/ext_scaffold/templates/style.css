@@ -1,28 +1,28 @@
 .add {
-  background-image:url(../javascripts/ext/examples/shared/icons/fam/add.gif) !important;
+  background-image:url(../ext/examples/shared/icons/fam/add.gif) !important;
 }
 
 .option {
-  background-image:url(../javascripts/ext/examples/shared/icons/fam/plugin.gif) !important;
+  background-image:url(../ext/examples/shared/icons/fam/plugin.gif) !important;
 }
 
 .remove {
-  background-image:url(../javascripts/ext/examples/shared/icons/fam/delete.gif) !important;
+  background-image:url(../ext/examples/shared/icons/fam/delete.gif) !important;
 }
 
 .save {#
-  background-image:url(../javascripts/ext/examples/shared/icons/save.gif) !important;
+  background-image:url(../ext/examples/shared/icons/save.gif) !important;
 }
 
 .edit {
-  background-image:url(../javascripts/ext/examples/shared/icons/fam/cog.png) !important;
+  background-image:url(../ext/examples/shared/icons/fam/cog.png) !important;
 }
 
 .minutecss{
     padding:4px;
 	height:100%;
     border-top: 1px solid #a3bad9;
-    background: #dfecfb url(../javascripts/ext/resources/images/default/shared/glass-bg.gif) repeat-x left top;	
+    background: #dfecfb url(../ext/resources/images/default/shared/glass-bg.gif) repeat-x left top;	
 }
 .y-hour-middle,.y-hour-left,.y-hour-right {
 	font:bold 11px "sans serif", tahoma, verdana, helvetica;
