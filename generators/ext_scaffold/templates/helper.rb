@@ -28,7 +28,7 @@ module <%= controller_class_name %>Helper
               renderTo: '#{element}',
               title:    '#{panel_title}',
               width:540,
-              height:183,
+              height:208,
               stripeRows: true,
               viewConfig: {
                   forceFit:true
