@@ -180,7 +180,7 @@ module <%= controller_class_name %>Helper
     options[:xtype] = rails_to_ext_field_types[options[:xtype].to_s] || options[:xtype]
     js =  "{"
     js << "  fieldLabel: '#{options[:field_label]}',"
-    js << "  allowBlank: #{options[:allow_blank] == false ? 'false' : 'true'}," if options[:allow_blank]
+    js << "  allowBlank: #{options[:allow_blank] == false ? 'false' : 'true'}," unless options[:allow_blank].nil?
     js << "  vtype: '#{options[:vtype]}'," if options[:vtype]
     js << "  xtype: '#{options[:xtype]}'," if options[:xtype]
     js << "  format: 'Y/m/d'," if options[:xtype] == 'datefield'
