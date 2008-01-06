@@ -82,8 +82,10 @@ class <%= controller_class_name %>Controller < ApplicationController
       session[:<%= table_name %>_sort_direction] = sort_direction
       session[:<%= table_name %>_offset] = offset
       session[:<%= table_name %>_limit] = limit
-
-      @<%= table_name %> = <%= class_name %>.find(:all, :offset => offset, :limit => limit, :order => "#{sort_field} #{sort_direction}")
+      
+      find_options = { :offset => offset, :limit => limit }
+      find_options[:order] = "#{sort_field} #{sort_direction}" unless sort_field.blank?
+      @<%= table_name %> = <%= class_name %>.find(:all, find_options)
     end
   
     def extjs_errors

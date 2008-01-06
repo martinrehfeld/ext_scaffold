@@ -1,3 +1,4 @@
+* make checkboxed left aligned in forms
 * move helper methods into general custom helper (instead of one helper per model)
 * use CSS classes prefixed with ext_scaffold to avoid name clashes
 * handle display of flash
