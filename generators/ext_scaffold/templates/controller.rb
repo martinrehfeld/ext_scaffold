@@ -32,7 +32,7 @@ class <%= controller_class_name %>Controller < ApplicationController
 
     respond_to do |format|
       if @<%= file_name %>.save
-        flash[:notice] = '<%= class_name %> was successfully created.' # TODO: how to handle flash apropriately
+        flash[:notice] = '<%= class_name %> was successfully created.'
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
         format.ext_json { render :json => extjs_errors }
@@ -44,7 +44,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def update
     respond_to do |format|
       if @<%= file_name %>.update_attributes(params[:<%= file_name %>])
-        flash[:notice] = '<%= class_name %> was successfully updated.' # TODO: how to handle flash apropriately
+        flash[:notice] = '<%= class_name %> was successfully updated.'
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
         format.ext_json { render :json => extjs_errors }
