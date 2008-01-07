@@ -3,12 +3,13 @@ module ExtScaffoldCoreExtensions
     module Base
 
       def to_ext_json(options = {})
+        success = options.delete(:success)
         # always transform attribute hash keys to model_name[attribute_name]
         if options.delete(:output_format) == :form_values
           # return array of id/value hashes for setValues
           attributes.map{|name,value| { :id => "#{self.class.to_s.underscore}[#{name}]", :value => value } }.to_json(options)
         else
-          if valid?
+          if success || (success.nil? && valid?)
             # return sucess/data hash to form loader
             { :success => true, :data => Hash[*attributes.map{|name,value| ["#{self.class.to_s.underscore}[#{name}]", value] }.flatten] }.to_json(options)
           else
@@ -19,7 +20,7 @@ module ExtScaffoldCoreExtensions
                 error_hash["@#{self.class.to_s.underscore}[#{field}]"] = "#{errors.is_a?(Array) ? errors.first : errors}"
               end
             end
-            { :success => false, :errors => error_hash }
+            { :success => false, :errors => error_hash }.to_json(options)
           end
         end
       end

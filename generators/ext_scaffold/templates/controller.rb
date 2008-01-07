@@ -35,7 +35,7 @@ class <%= controller_class_name %>Controller < ApplicationController
         flash[:notice] = '<%= class_name %> was successfully created.'
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
-        format.ext_json { render :json => @<%= file_name %>.to_ext_json }
+        format.ext_json { render :json => @<%= file_name %>.to_ext_json(:success => false) }
       end
     end
   end
@@ -47,7 +47,7 @@ class <%= controller_class_name %>Controller < ApplicationController
         flash[:notice] = '<%= class_name %> was successfully updated.'
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
-        format.ext_json { render :json => @<%= file_name %>.to_ext_json }
+        format.ext_json { render :json => @<%= file_name %>.to_ext_json(:success => false) }
       end
     end
   end
