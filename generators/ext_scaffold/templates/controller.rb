@@ -35,7 +35,7 @@ class <%= controller_class_name %>Controller < ApplicationController
         flash[:notice] = '<%= class_name %> was successfully created.'
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
-        format.ext_json { render :json => extjs_errors }
+        format.ext_json { render :json => @<%= file_name %>.to_ext_json }
       end
     end
   end
@@ -47,7 +47,7 @@ class <%= controller_class_name %>Controller < ApplicationController
         flash[:notice] = '<%= class_name %> was successfully updated.'
         format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
       else
-        format.ext_json { render :json => extjs_errors }
+        format.ext_json { render :json => @<%= file_name %>.to_ext_json }
       end
     end
   end
@@ -86,16 +86,6 @@ class <%= controller_class_name %>Controller < ApplicationController
       find_options = { :offset => offset, :limit => limit }
       find_options[:order] = "#{sort_field} #{sort_direction}" unless sort_field.blank?
       @<%= table_name %> = <%= class_name %>.find(:all, find_options)
-    end
-  
-    def extjs_errors
-      error_hash = {}
-      @<%= file_name %>.attributes.each do |field, value|
-        if errors = @<%= file_name %>.errors.on(field)
-          error_hash["@<%= file_name %>[#{field}]"] = "#{errors.is_a?(Array) ? errors.first : errors}"
-        end
-      end
-      { :success => false, :errors => error_hash }
     end
 
 end
