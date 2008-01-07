@@ -1,6 +1,4 @@
-* add working functional test
 * can model[attribute] syntax also be applied to grid columns?
 * move helper methods into general custom helper (instead of one helper per model)
-* use CSS classes prefixed with ext_scaffold to avoid name clashes
 * always jump to page with the newly added or updated record when submitting forms
 
