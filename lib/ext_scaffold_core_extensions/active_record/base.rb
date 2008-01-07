@@ -16,8 +16,8 @@ module ExtScaffoldCoreExtensions
             # return no-sucess/errors hash to form submitter
             error_hash = {}
             attributes.each do |field, value|
-              if errors = errors.on(field)
-                error_hash["@#{self.class.to_s.underscore}[#{field}]"] = "#{errors.is_a?(Array) ? errors.first : errors}"
+              if errors = self.errors.on(field)
+                error_hash["#{self.class.to_s.underscore}[#{field}]"] = "#{errors.is_a?(Array) ? errors.first : errors}"
               end
             end
             { :success => false, :errors => error_hash }.to_json(options)
