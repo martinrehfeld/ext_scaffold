@@ -18,7 +18,8 @@ class <%= controller_class_name %>Controller < ApplicationController
 
   # GET /<%= table_name %>/new
   def new
-    # new.html.erb (no data required)
+    @<%= file_name %> = <%= class_name %>.new(params[:<%= file_name %>])
+    # new.html.erb
   end
 
   # GET /<%= table_name %>/1/edit

@@ -96,7 +96,7 @@ module <%= controller_class_name %>Helper
 
   def ext_form_for(object_name, options = {})
     element = options[:element]
-    object = options[:object]
+    object = options[:object] || instance_variable_get("@#{object_name}")
     mode = options[:mode] || :edit
     form_items = options[:form_items] || '[]'
     member_path_method = "#{object_name}_path"
@@ -136,7 +136,7 @@ module <%= controller_class_name %>Helper
           });
 
           // populate form values
-          #{"panel.form.setValues(#{object.to_ext_json(:output_format => :form_values)});" unless mode == :new}
+          panel.form.setValues(#{object.to_ext_json(:output_format => :form_values)});
           
           // disable items in show mode
           #{"panel.form.items.each(function(item){item.disable();});" if mode == :show}
