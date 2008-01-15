@@ -19,7 +19,7 @@ module ExtScaffoldCoreExtensions
 
               var ds = #{datastore};
 
-              var cm = #{object_name}_column_model;
+              var cm = #{column_model};
               cm.defaultSortable = true;
 
               // create the grid
@@ -27,13 +27,13 @@ module ExtScaffoldCoreExtensions
                   ds: ds,
                   cm: cm,
                   sm: new Ext.grid.RowSelectionModel({singleSelect:true}),
-                  renderTo: '#{element}',
-                  title:    '#{panel_title}',
-                  width:540,
-                  height:208,
-                  stripeRows: true,
+                  renderTo:   '#{element}',
+                  title:      '#{panel_title}',
+                  width:      #{options[:width] || 540},
+                  height:     #{options[:width] || 208},
+                  stripeRows: #{options[:stripe_rows] == false ? 'false' : 'true'},
                   viewConfig: {
-                      forceFit:true
+                      forceFit:#{options[:force_fit] == false ? 'false' : 'true'}
                   },
 
                   // inline toolbars
@@ -147,10 +147,10 @@ module ExtScaffoldCoreExtensions
       end
 
       def ext_datastore_for(object_name, options = {})
-        # TODO: add options for :sort_field, :sort_dircetion and 'datastore variable name'
         collection_path_method = "#{object_name.to_s.pluralize}_path"
+        datastore_name = options[:datastore] || "#{object_name}_datastore"
         javascript_tag <<-_JS  
-          var #{object_name}_datastore = new Ext.data.Store({
+          var #{datastore_name} = new Ext.data.Store({
                   proxy: new Ext.data.HttpProxy({
                              url: '#{send collection_path_method, :format => :ext_json}',
                              method: 'GET'
@@ -163,13 +163,13 @@ module ExtScaffoldCoreExtensions
                           [ {name: 'id'}, #{attribute_mappings_for object_name, :skip_id => true} ]),
                   // turn on remote sorting
                   remoteSort: true,
-                  sortInfo: {field: 'id', direction: 'ASC'}
+                  sortInfo: {field: '#{options[:sort_field] || "id"}', direction: '#{options[:sort_direction] || "ASC"}'}
               });
         _JS
       end
 
       # this helper is meant to be called within a javascript_tag
-      # TODO: check possible refactoring into ext_form_items_for + private ext_field method
+      # NOTE: possible refactoring into ext_form_items_for + private ext_field method
       #       (similar to ext_datastore_for)
       def ext_field(options)
         rails_to_ext_field_types = {
