@@ -441,7 +441,7 @@ Ext.extend(DatetimeMenu, Ext.menu.Menu);
  * Inherits From: Ext.form.DateField
  */
 DatetimeField = function(config){
-  this.format = 'm/d/y H:i'; // set default format
+	this.format = 'm/d/y H:i'; // set default format
 	DatetimeField.superclass.constructor.call(this, new Ext.form.DateField(config), config);
 	this.menu = new DatetimeMenu();
 };

@@ -2,4 +2,3 @@
 * move helper methods into general custom helper (instead of one helper per model)
 * clean up the pagination state mess in the controller
 * always jump to page with the newly added or updated record when submitting forms
-
