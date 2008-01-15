@@ -69,24 +69,8 @@ class <%= controller_class_name %>Controller < ApplicationController
     end
     
     def find_<%= table_name %>
-      sort_field = (params[:sort] || session[:<%= table_name %>_sort_field] || 'id').sub(/(\A[^\[]*)\[([^\]]*)\]/,'\2') # fields may be passed as "object[attr]"
-      sort_direction = (params[:dir] || session[:<%= table_name %>_sort_direction]).to_s.upcase
-      offset = (params[:start] || session[:<%= table_name %>_offset] || 0).to_i
-      limit = (params[:limit] || session[:<%= table_name %>_limit] || 9223372036854775807).to_i
-      # allow only valid sort_fields matching column names of this model ...
-      sort_field, sort_direction = nil, nil unless <%= class_name %>.column_names.include?(sort_field)
-      # ... and valid sort_directions
-      sort_direction = nil unless %w(ASC DESC).include?(sort_direction)
-
-      # save pagination information in session
-      session[:<%= table_name %>_sort_field] = sort_field
-      session[:<%= table_name %>_sort_direction] = sort_direction
-      session[:<%= table_name %>_offset] = offset
-      session[:<%= table_name %>_limit] = limit
-      
-      find_options = { :offset => offset, :limit => limit }
-      find_options[:order] = "#{sort_field} #{sort_direction}" unless sort_field.blank?
-      @<%= table_name %> = <%= class_name %>.find(:all, find_options)
+      pagination_state = update_pagination_state_with_params!(:<%= file_name %>)
+      @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state))
     end
 
 end
