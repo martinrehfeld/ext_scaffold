@@ -30,7 +30,7 @@ module ExtScaffoldCoreExtensions
                   renderTo:   '#{element}',
                   title:      '#{panel_title}',
                   width:      #{options[:width] || 540},
-                  height:     #{options[:width] || 208},
+                  height:     #{options[:height] || 208},
                   stripeRows: #{options[:stripe_rows] == false ? 'false' : 'true'},
                   viewConfig: {
                       forceFit:#{options[:force_fit] == false ? 'false' : 'true'}
