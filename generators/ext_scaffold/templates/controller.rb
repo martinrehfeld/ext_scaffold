@@ -55,10 +55,14 @@ class <%= controller_class_name %>Controller < ApplicationController
 
   # DELETE /<%= table_name %>/1
   def destroy
-    @<%= file_name %>.destroy # TODO: handle errors
+    @<%= file_name %>.destroy
 
     respond_to do |format|
       format.js  { head :ok }
+    end
+  rescue
+    respond_to do |format|
+      format.js  { head :status => 500 }
     end
   end
   

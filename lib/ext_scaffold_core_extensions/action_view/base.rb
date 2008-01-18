@@ -67,9 +67,10 @@ module ExtScaffoldCoreExtensions
                                           method: 'POST',
                                           params: { _method: 'DELETE',
                                                     #{request_forgery_protection_token}: '#{form_authenticity_token}'
-                                                  }
+                                                  },
+                                          success: function(response, options){ ds.load(); },
+                                          failure: function(response, options){ alert('Delete operation failed.'); }
                                       });
-                                      ds.load();
                                    }
                                  } else { 
                                    alert('Please select a row first.');
