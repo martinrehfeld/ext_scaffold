@@ -5,6 +5,8 @@ module ExtScaffoldCoreExtensions
       def ext_grid_for(object_name, options = {})
         element = options[:element]
         datastore = options[:datastore] || "#{object_name}_datastore"
+        offset = params[:start] || (controller.send(:previous_pagination_state, object_name))[:offset] || 0
+        page_size = options[:page_size] || 5
         column_model = options[:column_model] || "#{object_name}_column_model"
         collection_path_method = "#{object_name.to_s.pluralize}_path"
         collection_path = send collection_path_method
@@ -79,7 +81,7 @@ module ExtScaffoldCoreExtensions
                       iconCls:'remove'
                   }],
                   bbar: new Ext.PagingToolbar({
-                            pageSize: 5,
+                            pageSize: #{page_size},
                             store: ds,
                             displayInfo: true,
                             displayMsg: 'Record {0} - {1} of {2}',
@@ -92,7 +94,7 @@ module ExtScaffoldCoreExtensions
                 window.location.href = '#{collection_path}/' + grid.getStore().getAt(row).id;
               });
 
-              ds.load();
+              ds.load({params: {start: #{offset}, limit:#{page_size}}});
           });
         _JS
       end
