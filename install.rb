@@ -2,8 +2,8 @@
 puts "\nInstalling Assets"
 for path in [ ['javascripts', 'ext_datetime.js'],
               ['stylesheets', 'ext_scaffold.css'],
-              ['images', 'arrowRight.gif'],
-              ['images', 'arrowLeft.gif'] ]
+              ['images', 'ext_scaffold', 'arrowRight.gif'],
+              ['images', 'ext_scaffold', 'arrowLeft.gif'] ]
   source = File.join(File.dirname(__FILE__),'assets',*path)
   destination = File.join(RAILS_ROOT,'public',*path)
   print "  #{path.join('/')} "
