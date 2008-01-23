@@ -20,6 +20,7 @@ for path in [ ['javascripts', 'ext_datetime.js'],
     end
   else
     puts "create"
+    FileUtils.mkdir_p File.dirname(destination)
     FileUtils.cp source, destination
   end
 end
