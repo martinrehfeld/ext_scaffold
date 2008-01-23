@@ -31,6 +31,7 @@ class ExtScaffoldTest < Test::Unit::TestCase
 
   ensure
     FileUtils.rm_r './ext_scaffold_demo'
+    raise if $!
   end
 
 end
