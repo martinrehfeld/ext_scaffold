@@ -52,15 +52,9 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
         )
       end
 
-      # Layout and stylesheet.
+      # Layout
       m.template('layout.html.erb', File.join('app/views/layouts', controller_class_path, "#{controller_file_name}.html.erb"))
-      m.template('style.css', 'public/stylesheets/ext_scaffold.css')
       
-      # Custom JavaScript
-      m.file('ext_datetime.js', 'public/javascripts/ext_datetime.js')
-      m.file('images/arrowLeft.gif', 'public/images/ext_scaffold/arrowLeft.gif')
-      m.file('images/arrowRight.gif', 'public/images/ext_scaffold/arrowRight.gif')
-
       m.dependency 'model', [name] + @args, :collision => :skip
 
       m.template(

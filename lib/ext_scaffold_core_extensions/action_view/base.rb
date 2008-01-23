@@ -152,6 +152,7 @@ module ExtScaffoldCoreExtensions
       def ext_datastore_for(object_name, options = {})
         collection_path_method = "#{object_name.to_s.pluralize}_path"
         datastore_name = options[:datastore] || "#{object_name}_datastore"
+        primary_key = object_name.to_s.classify.constantize.primary_key
         javascript_tag <<-_JS  
           var #{datastore_name} = new Ext.data.Store({
                   proxy: new Ext.data.HttpProxy({
@@ -160,13 +161,13 @@ module ExtScaffoldCoreExtensions
                          }),
                   reader: new Ext.data.JsonReader({
                               root: '#{object_name.to_s.pluralize}',
-                              id: 'id',
+                              id: '#{primary_key}',
                               totalProperty: 'results'
                           },
-                          [ {name: 'id'}, #{attribute_mappings_for object_name, :skip_id => true} ]),
+                          [ {name: 'id', mapping: '#{primary_key}'}, #{attribute_mappings_for object_name, :skip_id => true} ]),
                   // turn on remote sorting
                   remoteSort: true,
-                  sortInfo: {field: '#{options[:sort_field] || "id"}', direction: '#{options[:sort_direction] || "ASC"}'}
+                  sortInfo: {field: '#{options[:sort_field] || primary_key}', direction: '#{options[:sort_direction] || "ASC"}'}
               });
         _JS
       end
