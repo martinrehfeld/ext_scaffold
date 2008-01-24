@@ -4,6 +4,9 @@ require 'fileutils'
 # This is more or less what I would refer to as an integration test. It tests
 # the complete process from project creation to running the generated functional
 # tests.
+# To run the full test suite, an EXTJS_LOCATION environment variable must be 
+# set to point to a filesystem path with the extracted Ext JS framework to be
+# tested against 
 class ExtScaffoldTest < Test::Unit::TestCase
 
   def test_project_creation_and_demo_scaffold
@@ -24,6 +27,18 @@ class ExtScaffoldTest < Test::Unit::TestCase
     # migrate DB
     `cd ext_scaffold_demo; rake db:migrate`
     assert_equal 0, $?
+
+    # inject EXT into demo project if available
+    if ENV['EXTJS_LOCATION'] && File.directory?(ENV['EXTJS_LOCATION'])
+      ext_base_path = './ext_scaffold_demo/public/ext'
+      FileUtils.ln_s ENV['EXTJS_LOCATION'], ext_base_path
+      # check availability of neccessary files
+      %w(examples/shared/icons/fam/add.gif examples/shared/icons/fam/delete.gif examples/shared/icons/fam/cog.png resources/images/default/shared/glass-bg.gif).each do |f|
+        assert File.readable?(File.join(ext_base_path,f)), "#{f} is not availble in your Ext installation"
+      end
+    else
+      flunk "Test suite can not be completed without EXTJS_LOCATION pointing to valid Ext JS installation"
+    end
     
     # run functional tests on generated scaffold
     `cd ext_scaffold_demo; rake`
