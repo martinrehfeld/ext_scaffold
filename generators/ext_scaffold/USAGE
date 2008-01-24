@@ -23,7 +23,7 @@ Prerequisites:
 		`http://extjs.com/download`,
 
 		and unzip it into `#{RAILS_ROOT}/public/ext`. Ext_scaffold was
-		tested against version 2.0 of the Ext framework.
+		tested against version 2.0.1 of the Ext framework.
 
 Examples:
     `./script/generate ext_scaffold post` # no attributes, view will be anemic
