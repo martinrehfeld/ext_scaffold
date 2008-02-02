@@ -1,6 +1,7 @@
 # Copy custom assets
 puts "\nInstalling Assets"
 for path in [ ['javascripts', 'ext_datetime.js'],
+              ['javascripts', 'ext_searchfield.js'],
               ['stylesheets', 'ext_scaffold.css'],
               ['images', 'ext_scaffold', 'arrowRight.gif'],
               ['images', 'ext_scaffold', 'arrowLeft.gif'] ]

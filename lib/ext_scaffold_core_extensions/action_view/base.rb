@@ -79,14 +79,17 @@ module ExtScaffoldCoreExtensions
                                  }
                                },
                       iconCls:'remove'
-                  }],
+                  },'->'],
                   bbar: new Ext.PagingToolbar({
                             pageSize: #{page_size},
                             store: ds,
                             displayInfo: true,
                             displayMsg: 'Record {0} - {1} of {2}',
                             emptyMsg: "No records found"
-                  })
+                  }),
+                  plugins:[new Ext.ux.grid.Search({
+                              position:'top'
+                          })]
               });
 
               // show record on double-click

@@ -74,7 +74,7 @@ class <%= controller_class_name %>Controller < ApplicationController
     
     def find_<%= table_name %>
       pagination_state = update_pagination_state_with_params!(:<%= file_name %>)
-      @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state))
+      @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state).merge(options_from_search(:<%= file_name %>)))
     end
 
 end
