@@ -167,7 +167,7 @@ module ExtScaffoldCoreExtensions
                               id: '#{primary_key}',
                               totalProperty: 'results'
                           },
-                          [ {name: 'id', mapping: '#{primary_key}'}, #{attribute_mappings_for object_name, :skip_id => true} ]),
+                          [ {name: 'id', mapping: '#{field_mapping(object_name, primary_key)}'}, #{attribute_mappings_for object_name, :skip_id => true} ]),
                   // turn on remote sorting
                   remoteSort: true,
                   sortInfo: {field: '#{options[:sort_field] || primary_key}', direction: '#{options[:sort_direction] || "ASC"}'}
@@ -209,11 +209,19 @@ module ExtScaffoldCoreExtensions
       end
 
       private
+      
+        def field_mapping(object_name, field_name)
+          if ::ActiveRecord::Base.include_root_in_json
+            "#{object_name}.#{field_name}"
+          else
+            "#{field_name}"
+          end
+        end
 
         def attribute_mappings_for(object_name, options = {})
           object_class = object_name.to_s.classify.constantize
           requested_attributes = object_class.column_names.reject {|c| options[:skip_id] && c == object_class.primary_key}
-          requested_attributes.collect {|c| "{name: '#{object_name}[#{c}]', mapping: '#{c}'}" }.join(',')
+          requested_attributes.collect {|c| "{name: '#{object_name}[#{c}]', mapping: '#{field_mapping(object_name, c)}'}" }.join(',')
         end
 
         def ext_button(options)
