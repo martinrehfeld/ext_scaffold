@@ -42,7 +42,10 @@ module ExtScaffoldCoreExtensions
                   tbar:[{
                       text:'New...',
                       tooltip:'Create new #{object_name.to_s.humanize}',
-                      handler: function(){ window.location.href = '#{new_member_path}'; },
+                      handler: function(){
+                                 grid.suspendEvents();
+                                 window.location.href = '#{new_member_path}';
+                               },
                       iconCls:'add'
                   }, '-', {
                       text:'Edit...',
@@ -50,6 +53,7 @@ module ExtScaffoldCoreExtensions
                       handler: function(){
                                  var selected = grid.getSelectionModel().getSelected();
                                  if(selected) {
+                                   grid.suspendEvents();
                                    window.location.href = '#{collection_path}/' + selected.data.id + '/edit';
                                  } else { 
                                    alert('Please select a row first.');
@@ -94,7 +98,8 @@ module ExtScaffoldCoreExtensions
 
               // show record on double-click
               grid.on("rowdblclick", function(grid, row, e) {
-                window.location.href = '#{collection_path}/' + grid.getStore().getAt(row).id;
+                grid.suspendEvents();
+                window.location.href = '#{collection_path}/' + grid.getStore().getAt(row).data.id;
               });
 
               ds.load({params: {start: #{offset}, limit:#{page_size}}});
@@ -137,17 +142,17 @@ module ExtScaffoldCoreExtensions
 
                   buttons: [ #{ext_button(:text => 'Save', :type => 'submit',
                                           :handler => (mode == :edit ?
-                                            "function(){ panel.form.submit({url:'#{send member_path_method, object, :format => :ext_json}', params: { _method: 'PUT' }, waitMsg:'Saving...'}); }" :
-                                            "function(){ panel.form.submit({url:'#{send collection_path_method, :format => :ext_json}', waitMsg:'Saving...'}); }")) + ',' unless mode == :show}
-                             #{ext_button(:text => 'Back', :handler => "function(){ window.location.href = '#{collection_path}'; }")}
+                                            "function(){ panel.getForm().submit({url:'#{send member_path_method, object, :format => :ext_json}', params: { _method: 'PUT' }, waitMsg:'Saving...'}); }" :
+                                            "function(){ panel.getForm().submit({url:'#{send collection_path_method, :format => :ext_json}', waitMsg:'Saving...'}); }")) + ',' unless mode == :show}
+                             #{ext_button(:text => 'Back', :handler => "function(){ panel.suspendEvents(); window.location.href = '#{collection_path}'; }")}
                            ]
               });
 
               // populate form values
-              panel.form.setValues(#{object.to_ext_json(:output_format => :form_values)});
+              panel.getForm().setValues(#{object.to_ext_json(:output_format => :form_values)});
 
               // disable items in show mode
-              #{"panel.form.items.each(function(item){item.disable();});" if mode == :show}
+              #{"panel.getForm().items.each(function(item){item.disable();});" if mode == :show}
           });
         _JS
       end
