@@ -18,12 +18,12 @@ Description:
     declaration in config/routes.rb.
 
 Prerequisites:
-		You need to download the Ext Javascript framework from
+    You need to download the Ext Javascript framework from
 
-		`http://extjs.com/download`,
+    `http://extjs.com/download`,
 
-		and unzip it into `#{RAILS_ROOT}/public/ext`. Ext_scaffold was
-		tested against version 2.0.1 of the Ext framework.
+    and unzip it into `#{RAILS_ROOT}/public/ext`. Ext_scaffold was tested
+    against version 2.2 of the ExtJS framework.
 
 Examples:
     `./script/generate ext_scaffold post` # no attributes, view will be anemic
