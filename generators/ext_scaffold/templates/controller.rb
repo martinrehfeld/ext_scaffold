@@ -7,7 +7,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def index
     respond_to do |format|
       format.html     # index.html.erb (no data required)
-      format.ext_json { render :json => find_<%= table_name %>.to_ext_json(:class => <%= class_name %>, :count => <%= class_name %>.count) }
+      format.ext_json { render :json => find_<%= table_name %>.to_ext_json(:class => <%= class_name %>, :count => <%= class_name %>.count(options_from_search(<%= class_name %>))) }
     end
   end
 
