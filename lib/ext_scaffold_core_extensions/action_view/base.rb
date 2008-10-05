@@ -4,14 +4,14 @@ module ExtScaffoldCoreExtensions
 
       def ext_grid_for(object_name, options = {})
         element = options[:element]
-        datastore = options[:datastore] || "#{object_name}_datastore"
+        datastore = options[:datastore] || "#{object_name.to_s.demodulize.underscore}_datastore"
         offset = params[:start] || (controller.send(:previous_pagination_state, object_name))[:offset] || 0
         page_size = options[:page_size] || 5
-        column_model = options[:column_model] || "#{object_name}_column_model"
-        collection_path_method = "#{object_name.to_s.pluralize}_path"
+        column_model = options[:column_model] || "#{object_name.to_s.demodulize.underscore}_column_model"
+        collection_path_method = "#{object_name.to_s.tableize.tr('/','_')}_path"
         collection_path = send collection_path_method
-        new_member_path = send "new_#{object_name}_path"
-        panel_title = options[:title] || "Listing #{object_name.to_s.titleize.pluralize}"
+        new_member_path = send "new_#{object_name.to_s.underscore.tr('/','_')}_path"
+        panel_title = options[:title] || "Listing #{object_name.to_s.demodulize.titleize.pluralize}"
 
         javascript_tag <<-_JS
           Ext.onReady(function(){
@@ -41,7 +41,7 @@ module ExtScaffoldCoreExtensions
                   // inline toolbars
                   tbar:[{
                       text:'New...',
-                      tooltip:'Create new #{object_name.to_s.humanize}',
+                      tooltip:'Create new #{object_name.to_s.demodulize.humanize}',
                       handler: function(){
                                  grid.suspendEvents();
                                  window.location.href = '#{new_member_path}';
@@ -49,7 +49,7 @@ module ExtScaffoldCoreExtensions
                       iconCls:'add'
                   }, '-', {
                       text:'Edit...',
-                      tooltip:'Edit selected #{object_name.to_s.humanize}',
+                      tooltip:'Edit selected #{object_name.to_s.demodulize.humanize}',
                       handler: function(){
                                  var selected = grid.getSelectionModel().getSelected();
                                  if(selected) {
@@ -62,7 +62,7 @@ module ExtScaffoldCoreExtensions
                       iconCls:'edit'
                   },'-',{
                       text:'Delete...',
-                      tooltip:'Delete selected #{object_name.to_s.humanize}',
+                      tooltip:'Delete selected #{object_name.to_s.demodulize.humanize}',
                       handler: function(){
                                  var selected = grid.getSelectionModel().getSelected();
                                  if(selected) {
@@ -71,8 +71,8 @@ module ExtScaffoldCoreExtensions
                                       conn.request({
                                           url: '#{collection_path}/' + selected.data.id,
                                           method: 'POST',
-                                          params: { _method: 'DELETE',
-                                                    #{request_forgery_protection_token}: '#{form_authenticity_token}'
+                                          params: { _method: 'DELETE'
+                                                    #{", #{request_forgery_protection_token}: '#{form_authenticity_token}'" if protect_against_forgery?}
                                                   },
                                           success: function(response, options){ ds.load(); },
                                           failure: function(response, options){ alert('Delete operation failed.'); }
@@ -109,13 +109,13 @@ module ExtScaffoldCoreExtensions
 
       def ext_form_for(object_name, options = {})
         element = options[:element]
-        object = options[:object] || instance_variable_get("@#{object_name}")
+        object = options[:object] || instance_variable_get("@#{object_name.to_s.demodulize.underscore}")
         mode = options[:mode] || :edit
         form_items = options[:form_items] || '[]'
-        member_path_method = "#{object_name}_path"
-        collection_path_method = "#{object_name.to_s.pluralize}_path"
+        member_path_method = "#{object_name.to_s.underscore.tr('/','_')}_path"
+        collection_path_method = "#{object_name.to_s.tableize.tr('/','_')}_path"
         collection_path = send collection_path_method
-        form_title = options[:title] || "#{ {:show => 'Showing', :edit => 'Edit', :new => 'Create'}[options[:mode]]} #{object_name.to_s.humanize}"
+        form_title = options[:title] || "#{ {:show => 'Showing', :edit => 'Edit', :new => 'Create'}[options[:mode]]} #{object_name.to_s.demodulize.humanize}"
 
         javascript_tag <<-_JS  
           Ext.onReady(function(){
@@ -137,7 +137,7 @@ module ExtScaffoldCoreExtensions
                   defaultType:   'textfield',
                   renderTo:      '#{element}',
 
-                  baseParams:    {#{request_forgery_protection_token}: '#{form_authenticity_token}'},
+                  #{"baseParams:    {#{request_forgery_protection_token}: '#{form_authenticity_token}'}," if protect_against_forgery?}
                   items: #{form_items},
 
                   buttons: [ #{ext_button(:text => 'Save', :type => 'submit',
@@ -151,15 +151,15 @@ module ExtScaffoldCoreExtensions
               // populate form values
               panel.getForm().setValues(#{object.to_ext_json(:output_format => :form_values)});
 
-              // disable items in show mode
+              #{"// disable items in show mode" if mode == :show}
               #{"panel.getForm().items.each(function(item){item.disable();});" if mode == :show}
           });
         _JS
       end
 
       def ext_datastore_for(object_name, options = {})
-        collection_path_method = "#{object_name.to_s.pluralize}_path"
-        datastore_name = options[:datastore] || "#{object_name}_datastore"
+        collection_path_method = "#{object_name.to_s.tableize.tr('/','_')}_path"
+        datastore_name = options[:datastore] || "#{object_name.to_s.demodulize.underscore}_datastore"
         primary_key = object_name.to_s.classify.constantize.primary_key
         javascript_tag <<-_JS  
           var #{datastore_name} = new Ext.data.Store({
@@ -168,7 +168,7 @@ module ExtScaffoldCoreExtensions
                              method: 'GET'
                          }),
                   reader: new Ext.data.JsonReader({
-                              root: '#{object_name.to_s.pluralize}',
+                              root: '#{object_name.to_s.tableize.tr('/','_')}',
                               id: '#{primary_key}',
                               totalProperty: 'results'
                           },
@@ -217,7 +217,7 @@ module ExtScaffoldCoreExtensions
       
         def field_mapping(object_name, field_name)
           if ::ActiveRecord::Base.include_root_in_json
-            "#{object_name}.#{field_name}"
+            "#{object_name.to_s.demodulize.underscore}.#{field_name}"
           else
             "#{field_name}"
           end
@@ -226,7 +226,7 @@ module ExtScaffoldCoreExtensions
         def attribute_mappings_for(object_name, options = {})
           object_class = object_name.to_s.classify.constantize
           requested_attributes = object_class.column_names.reject {|c| options[:skip_id] && c == object_class.primary_key}
-          requested_attributes.collect {|c| "{name: '#{object_name}[#{c}]', mapping: '#{field_mapping(object_name, c)}'}" }.join(',')
+          requested_attributes.collect {|c| "{name: '#{object_name.to_s.demodulize.underscore}[#{c}]', mapping: '#{field_mapping(object_name, c)}'}" }.join(',')
         end
 
         def ext_button(options)

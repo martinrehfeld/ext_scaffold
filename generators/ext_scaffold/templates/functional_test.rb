@@ -5,6 +5,10 @@ require File.dirname(__FILE__) + '<%= '/..' * class_nesting_depth %>/../test_hel
 <%= controller_class_name %>Controller.request_forgery_protection_options[:secret] = 'test_secret'
 
 class <%= controller_class_name %>ControllerTest < ActionController::TestCase
+<% unless class_name.demodulize == class_name %>
+  set_fixture_class :<%= table_name %> => <%= class_name %>
+<% end -%>
+
   def test_should_get_index
     get :index
     assert_response :success

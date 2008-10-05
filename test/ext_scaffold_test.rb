@@ -20,7 +20,31 @@ class ExtScaffoldTest < Test::Unit::TestCase
     `cd ext_scaffold_demo/vendor/plugins/ext_scaffold; ruby ../../../script/runner ./install.rb`
     assert_equal 0, $?
 
-    # generate sample scaffold
+    # generate sample scaffolds
+    # ... namespaced
+    `cd ext_scaffold_demo; ruby script/generate ext_scaffold namespaced/post_model title:string body:text published:boolean visible_from:datetime visible_to:date`
+    assert_equal 0, $?
+      # To get a namespaced scaffold to work one needs to add a set_table_name declaration
+      # to the model and put the resources route into a map.namespace block.
+      # As these are shortcomings of the stock rails generators we will replace the model 
+      # definition and routes.rb files here with working versions!
+      File.open(File.join(%w(ext_scaffold_demo app models namespaced post_model.rb)), 'w') do |f|
+        f.write <<-EOF
+class Namespaced::PostModel < ActiveRecord::Base
+  set_table_name "namespaced_post_models"
+end
+        EOF
+      end
+      File.open(File.join(%w(ext_scaffold_demo config routes.rb)), 'w') do |f|
+        f.write <<-EOF
+ActionController::Routing::Routes.draw do |map|
+  map.namespace :namespaced do |ns|
+    ns.resources :post_models
+  end
+end
+        EOF
+      end
+    # ... non-namespaced
     `cd ext_scaffold_demo; ruby script/generate ext_scaffold Post title:string body:text published:boolean visible_from:datetime visible_to:date`
     assert_equal 0, $?
 
@@ -40,8 +64,8 @@ class ExtScaffoldTest < Test::Unit::TestCase
       flunk "Test suite can not be completed without EXTJS_LOCATION pointing to valid Ext JS installation"
     end
     
-    # run functional tests on generated scaffold
-    `cd ext_scaffold_demo; rake`
+    # run functional tests on generated scaffolds
+    puts `cd ext_scaffold_demo; rake`
     assert_equal 0, $?
 
   ensure

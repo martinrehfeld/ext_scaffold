@@ -56,12 +56,12 @@ module ExtScaffoldCoreExtensions
 
         # get pagination state from session
         def previous_pagination_state(model_klass = nil)
-          session["#{model_klass.to_s.pluralize.underscore if model_klass}_pagination_state"] || {}
+          session["#{model_klass.to_s.tableize.tr('/','_') if model_klass}_pagination_state"] || {}
         end
     
         # save pagination state to session
         def save_pagination_state(pagination_state, model_klass = nil)
-          session["#{model_klass.to_s.pluralize.underscore if model_klass}_pagination_state"] = pagination_state
+          session["#{model_klass.to_s.tableize.tr('/','_') if model_klass}_pagination_state"] = pagination_state
         end
 
     end

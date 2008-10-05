@@ -7,7 +7,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def index
     respond_to do |format|
       format.html     # index.html.erb (no data required)
-      format.ext_json { render :json => find_<%= table_name %>.to_ext_json(:class => :<%= file_name %>, :count => <%= class_name %>.count) }
+      format.ext_json { render :json => find_<%= table_name %>.to_ext_json(:class => <%= class_name %>, :count => <%= class_name %>.count) }
     end
   end
 
@@ -73,8 +73,8 @@ class <%= controller_class_name %>Controller < ApplicationController
     end
     
     def find_<%= table_name %>
-      pagination_state = update_pagination_state_with_params!(:<%= file_name %>)
-      @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state).merge(options_from_search(:<%= file_name %>)))
+      pagination_state = update_pagination_state_with_params!(<%= class_name %>)
+      @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state).merge(options_from_search(<%= class_name %>)))
     end
 
 end

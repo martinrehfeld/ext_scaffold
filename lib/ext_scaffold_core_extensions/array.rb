@@ -17,7 +17,7 @@ module ExtScaffoldCoreExtensions
       end
       element_count = options.delete(:count) || self.length
 
-      { :results => element_count, element_class.to_s.underscore.pluralize => self }.to_json(options)
+      { :results => element_count, element_class.to_s.tableize.tr('/','_') => self }.to_json(options)
     end
 
   end
