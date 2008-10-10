@@ -4,17 +4,18 @@ module ExtScaffoldCoreExtensions
 
       def to_ext_json(options = {})
         success = options.delete(:success)
+# FIXME: remove disabled code
         # always transform attribute hash keys to model_name[attribute_name]
-        if options.delete(:output_format) == :form_values
-          # return array of id/value hashes for setValues, i.e.:
-          #  [ {"value": 1, "id": "post[id]"},
-          #    {"value": "First Post", "id": "post[title]"},
-          #    {"value": "This is my first post.", "id": "post[body]"},
-          #    {"value": true, "id": "post[published]"},
-          #    ...
-          #  ]          
-          attributes.map{|name,value| { :id => "#{self.class.to_s.demodulize.underscore}[#{name}]", :value => value } }.to_json(options)
-        else
+        # if options.delete(:output_format) == :form_values
+        #   # return array of id/value hashes for setValues, i.e.:
+        #   #  [ {"value": 1, "id": "post[id]"},
+        #   #    {"value": "First Post", "id": "post[title]"},
+        #   #    {"value": "This is my first post.", "id": "post[body]"},
+        #   #    {"value": true, "id": "post[published]"},
+        #   #    ...
+        #   #  ]          
+        #   attributes.map{|name,value| { :id => "#{self.class.to_s.demodulize.underscore}[#{name}]", :value => value } }.to_json(options)
+        # else
           if success || (success.nil? && valid?)
             # return sucess/data hash to form loader, i.e.:
             #  {"data": { "post[id]": 1, "post[title]": "First Post",
@@ -33,7 +34,7 @@ module ExtScaffoldCoreExtensions
             end
             { :success => false, :errors => error_hash }.to_json(options)
           end
-        end
+        # end
       end
 
     end
