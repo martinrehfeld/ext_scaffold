@@ -1,6 +1,11 @@
 class <%= controller_class_name %>Controller < ApplicationController
+  
+  include ExtScaffold
 
-  before_filter :find_<%= file_name %>, :only => [ :show, :edit, :update, :destroy ]
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    render :json => { :success => false }, :status => :not_found
+  end
+  before_filter :find_<%= file_name %>, :only => [ :update, :destroy ]
 
   # GET /<%= table_name %>
   # GET /<%= table_name %>.ext_json
@@ -11,70 +16,33 @@ class <%= controller_class_name %>Controller < ApplicationController
     end
   end
 
-  # GET /<%= table_name %>/1
-  def show
-    # show.html.erb
-  end
-
-  # GET /<%= table_name %>/new
-  def new
-    @<%= file_name %> = <%= class_name %>.new(params[:<%= file_name %>])
-    # new.html.erb
-  end
-
-  # GET /<%= table_name %>/1/edit
-  def edit
-    # edit.html.erb
-  end
-
   # POST /<%= table_name %>
   def create
     @<%= file_name %> = <%= class_name %>.new(params[:<%= file_name %>])
-
-    respond_to do |format|
-      if @<%= file_name %>.save
-        flash[:notice] = '<%= class_name %> was successfully created.'
-        format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
-      else
-        format.ext_json { render :json => @<%= file_name %>.to_ext_json(:success => false) }
-      end
-    end
+    render :json => @<%= file_name %>.to_ext_json(:success => @<%= file_name %>.save)
   end
+  
 
-  # PUT /<%= table_name %>/1
+  # PUT /<%= table_name %>/1.ext_json
   def update
-    respond_to do |format|
-      if @<%= file_name %>.update_attributes(params[:<%= file_name %>])
-        flash[:notice] = '<%= class_name %> was successfully updated.'
-        format.ext_json { render(:update) {|page| page.redirect_to <%= table_name %>_url } }
-      else
-        format.ext_json { render :json => @<%= file_name %>.to_ext_json(:success => false) }
-      end
-    end
+    render :json => @<%= file_name %>.to_ext_json(:success => @<%= file_name %>.update_attributes(params[:<%= file_name %>]))
   end
 
   # DELETE /<%= table_name %>/1
   def destroy
     @<%= file_name %>.destroy
-
-    respond_to do |format|
-      format.js  { head :ok }
-    end
-  rescue
-    respond_to do |format|
-      format.js  { head :status => 500 }
-    end
+    head :ok
   end
   
-  protected
+protected
   
-    def find_<%= file_name %>
-      @<%= file_name %> = <%= class_name %>.find(params[:id])
-    end
-    
-    def find_<%= table_name %>
-      pagination_state = update_pagination_state_with_params!(<%= class_name %>)
-      @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state).merge(options_from_search(<%= class_name %>)))
-    end
+  def find_<%= file_name %>
+    @<%= file_name %> = <%= class_name %>.find(params[:id])
+  end
+  
+  def find_<%= table_name %>
+    pagination_state = update_pagination_state_with_params!(<%= class_name %>)
+    @<%= table_name %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state).merge(options_from_search(<%= class_name %>)))
+  end
 
 end
