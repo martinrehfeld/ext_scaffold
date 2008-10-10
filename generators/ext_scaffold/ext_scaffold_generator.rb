@@ -50,7 +50,7 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       m.template('view_index.html.erb', File.join('app/views', controller_class_path, controller_file_name, 'index.html.erb'))
       
       # ext component for scaffold
-      m.template('ext_scaffold_panel.js', File.join('public/javascripts/ext_scaffold', controller_class_path, "#{controller_file_name}.js"))
+      m.template('ext_scaffold_panel.js', File.join('public/javascripts/ext_scaffold', "#{controller_class_path}.js"))
 
       # layout
       m.template('layout.html.erb', File.join('app/views/layouts', controller_class_path, "#{controller_file_name}.html.erb"))

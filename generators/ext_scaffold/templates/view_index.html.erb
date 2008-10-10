@@ -1,9 +1,20 @@
-<div id="<%= singular_name %>-grid"></div>
-<%%= ext_datastore_for '<%= class_name %>' %>
-<%% javascript_tag do -%>
-  var <%= singular_name %>_column_model = new Ext.grid.ColumnModel([
-    {id: 'id', header: "#", width: 20, dataIndex: 'id'},
-<%= attributes.collect {|attribute| "    {header: '#{attribute.column.human_name}', dataIndex: '#{singular_name}[#{attribute.name}]'}" }.join(",\n") %>
-  ]);
-<%% end -%>
-<%%= ext_grid_for '<%= class_name %>', :element => '<%= singular_name %>-grid' %>
+<%% content_for :head do %>
+  <%%= javascript_include_tag '<%= "ext_scaffold/#{controller_class_path}.js" %>' %>
+  <%% javascript_tag do %>
+    Ext.onReady(function() {
+
+      Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+      Ext.QuickTips.init();
+
+      var vp = new Ext.Viewport({
+        layout: 'fit',
+        items: new ExtScaffold.Posts({
+          url: '<%%= reloaded_posts_path %>'
+          <%%= ",baseParams: { #{request_forgery_protection_token}: '#{form_authenticity_token}' }" if protect_against_forgery? %>
+        }),
+        renderTo: Ext.getBody()
+      });
+    });
+  <%% end %>
+<%% end %>
+
