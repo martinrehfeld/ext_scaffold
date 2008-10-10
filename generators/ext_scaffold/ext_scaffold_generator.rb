@@ -44,23 +44,24 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       m.directory(File.join('test/functional', controller_class_path))
       m.directory(File.join('test/unit', class_path))
       m.directory('public/images/ext_scaffold')
+      m.directory('public/javascripts/ext_scaffold')
 
-      for action in scaffold_views
-        m.template(
-          "view_#{action}.html.erb",
-          File.join('app/views', controller_class_path, controller_file_name, "#{action}.html.erb")
-        )
-      end
+      # index view
+      m.template('view_index.html.erb', File.join('app/views', controller_class_path, controller_file_name, 'index.html.erb'))
+      
+      # ext component for scaffold
+      m.template('ext_scaffold_panel.js', File.join('public/javascripts/ext_scaffold', controller_class_path, "#{controller_file_name}.js"))
 
-      # Layout
+      # layout
       m.template('layout.html.erb', File.join('app/views/layouts', controller_class_path, "#{controller_file_name}.html.erb"))
       
+      # model --> use model generator
       m.dependency 'model', [name] + @args, :collision => :skip
 
-      m.template(
-        'controller.rb', File.join('app/controllers', controller_class_path, "#{controller_file_name}_controller.rb")
-      )
+      # controller
+      m.template('controller.rb', File.join('app/controllers', controller_class_path, "#{controller_file_name}_controller.rb"))
 
+      # tests
       m.template('functional_test.rb', File.join('test/functional', controller_class_path, "#{controller_file_name}_controller_test.rb"))
       m.template('helper.rb',          File.join('app/helpers',     controller_class_path, "#{controller_file_name}_helper.rb"))
 
@@ -81,10 +82,6 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
              "Don't add timestamps to the migration file for this model") { |v| options[:skip_timestamps] = v }
       opt.on("--skip-migration",
              "Don't generate a migration file for this model") { |v| options[:skip_migration] = v }
-    end
-
-    def scaffold_views
-      %w[ index show new edit _form_items ]
     end
 
     def model_name
