@@ -1,5 +1,5 @@
 <%% content_for :head do %>
-  <%%= javascript_include_tag '<%= "ext_scaffold/#{controller_class_path}/#{controller_file_name}.js" %>' %>
+  <%%= javascript_include_tag '<%= "ext_scaffold/#{class_name.underscore}.js" %>' %>
   <%% javascript_tag do %>
     Ext.onReady(function() {
 
@@ -8,8 +8,8 @@
 
       var vp = new Ext.Viewport({
         layout: 'fit',
-        items: new ExtScaffold.Posts({
-          url: '<%%= "#{controller_class_name.tableize.tr('/','_')}_path}_path" %>'
+        items: new ExtScaffold.<%= class_name.gsub(/::/,'.') %>({
+          url: '<%%= <%= "#{controller_class_name.tableize.tr('/','_')}_path" %> %>'
           <%%= ",baseParams: { #{request_forgery_protection_token}: '#{form_authenticity_token}' }" if protect_against_forgery? %>
         }),
         renderTo: Ext.getBody()

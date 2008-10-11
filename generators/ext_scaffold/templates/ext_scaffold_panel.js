@@ -7,17 +7,21 @@ Post <%= class_name %>
       ohne nesting: <%= class_name.demodulize %>
 post[att1]..post[att2] (attribute / fields / mappings)
 posts (JSON root) <%= controller_class_name.tableize.tr('/','_') %>
+post (param) <%= class_name.demodulize.underscore %>
 */
 
-ExtScaffold.Posts = Ext.extend(Ext.Panel, {
+<% controller_class_nesting.inject('ExtScaffold') do |cumulative_nesting, level| -%>
+<% cumulative_nesting << '.' << level -%>
+<%= "Ext.namespace('#{cumulative_nesting}');" %>
+<% cumulative_nesting -%>
+<% end %>
+ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
   //
   // static text properties (override for i18n)
   //
-  labels: { // FIXME: tpl
-    'id': '#',
-    'post[title]': 'Title',
-    'post[body]': 'Body',
-    'post[published]': 'Published'
+  labels: {
+     'id': '#'
+<%= attributes.inject('') {|labels, a| labels << "    ,'#{class_name.demodulize.underscore}[#{a.name}]': '#{a.name.humanize}'\n" } -%>
   },
   listModeTitle: 'Listing <%= controller_class_name.demodulize %>',
   showModeTitle: 'Show <%= class_name.demodulize %>',
@@ -68,26 +72,25 @@ ExtScaffold.Posts = Ext.extend(Ext.Panel, {
     if (config.baseParams) this.baseParams = config.baseParams;
 
     var ds = new Ext.data.Store({
-        proxy: new Ext.data.HttpProxy({
-                   url: scaffoldPanel.url + '?format=ext_json',
-                   method: 'GET'
-               }),
-        reader: new Ext.data.JsonReader({
-                    root: '<%= controller_class_name.tableize.tr('/','_') %>',
-                    id: 'id',
-                    totalProperty: 'results'
-                },
-                // FIXME: tpl
-                [ {name: 'id', mapping: 'post.id'}, {name: 'post[title]', mapping: 'post.title'},{name: 'post[body]', mapping: 'post.body'},{name: 'post[published]', mapping: 'post.published'},{name: 'post[created_at]', mapping: 'post.created_at'},{name: 'post[updated_at]', mapping: 'post.updated_at'} ]),
+      proxy: new Ext.data.HttpProxy({
+                 url: scaffoldPanel.url + '?format=ext_json',
+                 method: 'GET'
+             }),
+      reader: new Ext.data.JsonReader({
+                  root: '<%= controller_class_name.tableize.tr('/','_') %>',
+                  id: 'id',
+                  totalProperty: 'results'
+              },[
+                 { name: 'id', mapping: '<%= class_name.demodulize.underscore %>.id' }
+<%= attributes.inject('') {|mappings, a| mappings << "                ,{ name: '#{class_name.demodulize.underscore}[#{a.name}]', mapping: '#{"#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.include_root_in_json}#{a.name}' }\n" } -%>
+              ]),
         remoteSort: true, // turn on server-side sorting
         sortInfo: {field: 'id', direction: 'ASC'}
     });
 
-    var cm = new Ext.grid.ColumnModel([ // FIXME: tpl
-      {id: 'id', header: scaffoldPanel.labels['id'], width: 20, dataIndex: 'id'},
-      {header: scaffoldPanel.labels['post[title]'], dataIndex: 'post[title]'},
-      {header: scaffoldPanel.labels['post[body]'], dataIndex: 'post[body]'},
-      {header: scaffoldPanel.labels['post[published]'], dataIndex: 'post[published]'}
+    var cm = new Ext.grid.ColumnModel([
+       {id: 'id', header: scaffoldPanel.labels['id'], width: 20, dataIndex: 'id'}
+<%= attributes.inject('') {|columns, a| columns << "      ,{ header: scaffoldPanel.labels['#{class_name.demodulize.underscore}[#{a.name}]'], dataIndex: '#{class_name.demodulize.underscore}[#{a.name}]' }\n" } -%>
     ]);
 
     cm.defaultSortable = true; // all fields are sortable by default
@@ -175,14 +178,25 @@ ExtScaffold.Posts = Ext.extend(Ext.Panel, {
     ds.load({params: {start: 0, limit: this.recordsPerPage} });
     
     // create the form
-    var post_form_items = [ // FIXME: tpl
-      {  fieldLabel: scaffoldPanel.labels['post[title]'],  xtype: 'textfield',  name: 'post[title]'},
-      {  fieldLabel: scaffoldPanel.labels['post[body]'],  xtype: 'textarea',  name: 'post[body]'},
-      {  fieldLabel: scaffoldPanel.labels['post[published]'],  xtype: 'checkbox',  inputValue: '1', width: 18, height: 21,  name: 'post[published]'},{   xtype: 'hidden',   value: '0',   name: 'post[published]' }
-    ];
     this.formPanel = new ExtScaffold.FormPanel({
       baseParams: scaffoldPanel.baseParams,
-      items: post_form_items,
+      items: [
+<% form_items = attributes.inject([]) do |items, a|
+     item =  "        { fieldLabel: scaffoldPanel.labels['#{class_name.demodulize.underscore}[#{a.name}]']"
+     item << ", name: '#{class_name.demodulize.underscore}[#{a.name}]'"
+     item << case a.field_type
+       when :text_field      then ", xtype: 'textfield'"
+       when :datetime_select then ", xtype: 'xdatetime'"
+       # FIXME: either make *format customizable via a property or just use the defaults of the underlying classes
+       when :date_select     then ", xtype: 'datefield', format: 'Y/m/d',"
+       when :text_area       then ", xtype: 'textarea', dateFormat: 'Y/m/d', timeFormat: 'H:i:s'"
+       when :check_box       then ", xtype: 'checkbox', inputValue: '1', width: 18, height: 21 }, { xtype: 'hidden', name: '#{class_name.demodulize.underscore}[#{a.name}]', value: '0'"
+     end
+     item << " }"
+     items << item
+   end -%>
+<%= form_items.join(",\n") %>
+      ],
       modeTitles: {
        'show': scaffoldPanel.showModeTitle,
        'edit': scaffoldPanel.editModeTitle,
@@ -226,7 +240,7 @@ ExtScaffold.Posts = Ext.extend(Ext.Panel, {
       }
     });
 
-    ExtScaffold.Posts.superclass.constructor.call(this, Ext.applyIf(config, {
+    ExtScaffold.<%= class_name.gsub(/::/,'.') %>.superclass.constructor.call(this, Ext.applyIf(config, {
       layout:     'slide',
       layoutConfig: {
           easing: 'easeOut',

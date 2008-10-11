@@ -44,13 +44,13 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       m.directory(File.join('test/functional', controller_class_path))
       m.directory(File.join('test/unit', class_path))
       m.directory('public/images/ext_scaffold')
-      m.directory('public/javascripts/ext_scaffold')
+      m.directory(File.join('public/javascripts/ext_scaffold', "#{controller_class_path}"))
 
       # index view
       m.template('view_index.html.erb', File.join('app/views', controller_class_path, controller_file_name, 'index.html.erb'))
       
       # ext component for scaffold
-      m.template('ext_scaffold_panel.js', File.join('public/javascripts/ext_scaffold', controller_class_path, "#{controller_class_path}.js"))
+      m.template('ext_scaffold_panel.js', File.join('public/javascripts/ext_scaffold', controller_class_path, "#{class_name.demodulize.underscore}.js"))
 
       # layout
       m.template('layout.html.erb', File.join('app/views/layouts', controller_class_path, "#{controller_file_name}.html.erb"))
