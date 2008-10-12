@@ -14,7 +14,6 @@ class <%= controller_class_name %>ControllerTest < ActionController::TestCase
     assert_response :success
     get :index, :format => 'ext_json'
     assert_response :success
-    assert_not_nil assigns(:<%= table_name %>)
   end
 
   def test_should_create_<%= file_name %>
