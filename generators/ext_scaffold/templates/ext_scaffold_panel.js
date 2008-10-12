@@ -1,15 +1,3 @@
-/*
-Substitutions
--------------
-Posts <%= controller_class_name %>  -- WARNING: might be namespaced with ::, generate Ext.ns and s/::/./g
-      ohne nesting: <%= controller_class_name.demodulize %>
-Post <%= class_name %>
-      ohne nesting: <%= class_name.demodulize %>
-post[att1]..post[att2] (attribute / fields / mappings)
-posts (JSON root) <%= controller_class_name.tableize.tr('/','_') %>
-post (param) <%= class_name.demodulize.underscore %>
-*/
-
 <% controller_class_nesting.inject('ExtScaffold') do |cumulative_nesting, level| -%>
 <% cumulative_nesting << '.' << level -%>
 <%= "Ext.namespace('#{cumulative_nesting}');" %>
@@ -82,14 +70,34 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
                   totalProperty: 'results'
               },[
                  { name: 'id', mapping: '<%= class_name.demodulize.underscore %>.id' }
-<%= attributes.inject('') {|mappings, a| mappings << "                ,{ name: '#{class_name.demodulize.underscore}[#{a.name}]', mapping: '#{"#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.include_root_in_json}#{a.name}' }\n" } -%>
+<%= attributes.inject('') do |mappings, a|
+      mapping =  "                ,{ "
+      mapping << "name: '#{class_name.demodulize.underscore}[#{a.name}]', "
+      mapping << "mapping: '"
+        mapping << "#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.include_root_in_json
+        mapping << "#{a.name}'"
+      mapping << case a.field_type
+        when :date_select     then ", type: 'date', dateFormat: 'Y-m-d'"
+        when :datetime_select then ", type: 'date', dateFormat: 'c'"
+        when :check_box       then ", type: 'boolean'"
+        when :text_field      then case a.type
+                                    when :integer         then ", type: 'int'"
+                                    when :float, :decimal then ", type: 'float'"
+                                    else ""
+                                  end
+        else ""
+      end
+      mapping << " }\n"
+      mappings << mapping
+    end
+-%>
               ]),
         remoteSort: true, // turn on server-side sorting
         sortInfo: {field: 'id', direction: 'ASC'}
     });
 
     var cm = new Ext.grid.ColumnModel([
-       {id: 'id', header: scaffoldPanel.labels['id'], width: 20, dataIndex: 'id'}
+       {id: 'id', header: scaffoldPanel.labels['id'], width: 40, dataIndex: 'id'}
 <%= attributes.inject('') {|columns, a| columns << "      ,{ header: scaffoldPanel.labels['#{class_name.demodulize.underscore}[#{a.name}]'], dataIndex: '#{class_name.demodulize.underscore}[#{a.name}]' }\n" } -%>
     ]);
 
@@ -103,7 +111,6 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
         title:  scaffoldPanel.listModeTitle,
         height: '100%',
         stripeRows: true,
-        viewConfig: { forceFit:true },
 
         // inline toolbars
         tbar:[{
@@ -185,16 +192,16 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
      item =  "        { fieldLabel: scaffoldPanel.labels['#{class_name.demodulize.underscore}[#{a.name}]']"
      item << ", name: '#{class_name.demodulize.underscore}[#{a.name}]'"
      item << case a.field_type
-       when :text_field      then ", xtype: 'textfield'"
+       when :text_field      then [:integer, :float, :decimal].include?(a.type) ? ", xtype: 'numberfield'" : ", xtype: 'textfield'"
+       when :text_area       then ", xtype: 'textarea'"
+       when :date_select     then ", xtype: 'datefield',"
        when :datetime_select then ", xtype: 'xdatetime'"
-       # FIXME: either make *format customizable via a property or just use the defaults of the underlying classes
-       when :date_select     then ", xtype: 'datefield', format: 'Y/m/d',"
-       when :text_area       then ", xtype: 'textarea', dateFormat: 'Y/m/d', timeFormat: 'H:i:s'"
-       when :check_box       then ", xtype: 'checkbox', inputValue: '1', width: 18, height: 21 }, { xtype: 'hidden', name: '#{class_name.demodulize.underscore}[#{a.name}]', value: '0'"
+       when :check_box       then ", xtype: 'checkbox', inputValue: '1' }, { xtype: 'hidden', name: '#{class_name.demodulize.underscore}[#{a.name}]', value: '0'"
      end
      item << " }"
      items << item
-   end -%>
+   end
+-%>
 <%= form_items.join(",\n") %>
       ],
       modeTitles: {
