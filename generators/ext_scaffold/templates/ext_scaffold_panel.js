@@ -74,7 +74,7 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
       mapping =  "                ,{ "
       mapping << "name: '#{class_name.demodulize.underscore}[#{a.name}]', "
       mapping << "mapping: '"
-        mapping << "#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.include_root_in_json
+        mapping << "#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.respond_to?(:include_root_in_json) && ::ActiveRecord::Base.include_root_in_json
         mapping << "#{a.name}'"
       mapping << case a.field_type
         when :date_select     then ", type: 'date', dateFormat: 'Y-m-d'"
