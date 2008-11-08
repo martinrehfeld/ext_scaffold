@@ -3,7 +3,8 @@ module ExtScaffoldCoreExtensions
     module Base
 
       def to_ext_json(options = {})
-        if options.delete(:success) || (success.nil? && valid?)
+        success = options.delete(:success)
+        if success || (success.nil? && valid?)
           # return sucess/data hash to form loader, i.e.:
           #  {"data": { "post[id]": 1, "post[title]": "First Post",
           #             "post[body]": "This is my first post.",
