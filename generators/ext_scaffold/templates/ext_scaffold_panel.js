@@ -11,17 +11,16 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
      'id': '#'
 <%= attributes.inject('') {|labels, a| labels << "    ,'#{class_name.demodulize.underscore}[#{a.name}]': '#{a.name.humanize}'\n" } -%>
   },
-  listModeTitle: 'Listing <%= controller_class_name.demodulize %>',
-  showModeTitle: 'Show <%= class_name.demodulize %>',
-  editModeTitle: 'Edit <%= class_name.demodulize %>',
-  newModeTitle:  'Create <%= class_name.demodulize %>',
+  title: '<%= controller_class_name %>',
   newButtonLabel: 'New...',
   newButtonTooltip: 'Create new <%= class_name.demodulize %>',
   editButtonLabel: 'Edit...',
   editButtonTooltip: 'Edit selected <%= class_name.demodulize %>',
   selectRowText: 'Please select a row first.',
   deleteButtonLabel: 'Delete...',
-  deleteButtonTooltip: 'Delete selected <%= class_name.demodulize %>',
+  formToggleButtonLabel: 'Details',
+  formToggleButtonTooltip: 'Show / Hide Details',
+  deleteButtonTooltip: 'Delete selected <%= class_name.demodulize %>...',
   deleteConfirmationText: 'Really delete?',
   deleteFailedText: 'Delete operation failed. The record might have been deleted by someone else.',
   paginationStatusTemplate: 'Record {0} - {1} of {2}',
@@ -35,29 +34,96 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
   url: '#',
   baseParams: {},
   recordsPerPage: 50,
+
+  //
+  // private properties
+  //
+  formPanelWasCollapsed: true,
+  selectedRecordId: undefined,
+
+  // defaults for (superclass) config
+  layout: 'border',
+  border: false,
+  cls:    'ext-scaffold',
   
   //
   // public instance methods
   //
   activateGrid: function() {
-    this.getLayout().setActiveItem(0);
+    var gp = this.getGridPanel();
+    var gv = gp.getView();
+    var ds = this.getStore();
+    
+    gp.enable();
+
+    if (this.formPanelWasCollapsed) this.getFormPanel().collapse();
+
+    // give focus to the grid to enable up/down keys
+    if (ds.getCount() > 0) {
+      if (this.selectedRecordId) {
+        var matchingRecords = ds.query('id', this.selectedRecordId);
+        if (matchingRecords) {
+          gv.focusRow(ds.indexOf(matchingRecords.first())); // focus selected row
+        } else {
+          gv.focusRow(0); // no matching selection -> focus first row
+        }
+      } else {
+        gv.focusRow(0); // no selection at all -> focus first row
+      }
+    }
   },
   
   activateForm: function(mode) {
-    this.formPanel.setFormMode(mode);
-    this.getLayout().setActiveItem(1);
+    var fp = this.getFormPanel();
+
+    fp.setFormMode(mode);
+
+    this.formPanelWasCollapsed = fp.collapsed;
+    if (fp.collapsed) fp.expand();
+
+    fp.setWidth(fp.initialConfig.width, true);
+    this.doLayout(); // re-render border layout to reflect current form width
+
+    if(mode == 'new' || mode == 'edit') {
+      this.getGridPanel().disable(); // make new and edit modal by disabling the gridPanel
+       // focus first form field -- we need a delay here to allow processing of expand()
+      fp.getForm().findField('<%= "#{class_name.demodulize.underscore}[#{attributes.first.name}]" %>').focus(true, 400);
+    }
+  },
+  
+  getGridPanel: function() {
+    return Ext.getCmp('<%= class_name.demodulize.underscore.dasherize %>-grid');
+  },
+  
+  getFormPanel: function() {
+    return Ext.getCmp('<%= class_name.demodulize.underscore.dasherize %>-form');
+  },
+  
+  getStore: function() {
+    return this.getGridPanel().getStore();
+  },
+  
+  resetForm: function(activateGrid) {
+    var fp = this.getFormPanel();
+    fp.getForm().reset();
+    fp.setFormMode('show');
+    if (activateGrid) this.activateGrid();
+  },
+  
+  reloadStore: function(resetForm) {
+    this.getStore().load();
+    if (resetForm) this.resetForm(true);
+  },
+  
+  refreshFormToggle: function() {
+    Ext.getCmp('<%= class_name.demodulize.underscore.dasherize %>-form-toggle').toggle(!this.getFormPanel().collapsed);
   },
   
   //
-  // constructor
+  // initComponent
   //
-  constructor: function(config) {
-    if (config === undefined) config = {}; // set default for optional config param
-    var scaffoldPanel = this;              // save scope for later reference
-    
-    // set custom properties
-    if (config.url) this.url = config.url;
-    if (config.baseParams) this.baseParams = config.baseParams;
+  initComponent: function() {
+    var scaffoldPanel = this; // save scope for later reference
 
     var ds = new Ext.data.Store({
       proxy: new Ext.data.HttpProxy({
@@ -69,27 +135,27 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
                   id: 'id',
                   totalProperty: 'results'
               },[
-                 { name: 'id', mapping: '<%= class_name.demodulize.underscore %>.id' }
+                { name: 'id', mapping: '<%= class_name.demodulize.underscore %>.id' }
 <%= attributes.inject('') do |mappings, a|
-      mapping =  "                ,{ "
-      mapping << "name: '#{class_name.demodulize.underscore}[#{a.name}]', "
-      mapping << "mapping: '"
-        mapping << "#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.respond_to?(:include_root_in_json) && ::ActiveRecord::Base.include_root_in_json
-        mapping << "#{a.name}'"
-      mapping << case a.field_type
-        when :date_select     then ", type: 'date', dateFormat: 'Y-m-d'"
-        when :datetime_select then ", type: 'date', dateFormat: 'c'"
-        when :check_box       then ", type: 'boolean'"
-        when :text_field      then case a.type
-                                    when :integer         then ", type: 'int'"
-                                    when :float, :decimal then ", type: 'float'"
-                                    else ""
-                                  end
-        else ""
-      end
-      mapping << " }\n"
-      mappings << mapping
-    end
+     mapping =  "                ,{ "
+     mapping << "name: '#{class_name.demodulize.underscore}[#{a.name}]', "
+     mapping << "mapping: '"
+       mapping << "#{class_name.demodulize.underscore}." if ::ActiveRecord::Base.respond_to?(:include_root_in_json) && ::ActiveRecord::Base.include_root_in_json
+       mapping << "#{a.name}'"
+     mapping << case a.field_type
+       when :date_select     then ", type: 'date', dateFormat: 'Y-m-d'"
+       when :datetime_select then ", type: 'date', dateFormat: 'c'"
+       when :check_box       then ", type: 'boolean'"
+       when :text_field      then case a.type
+                                   when :integer         then ", type: 'int'"
+                                   when :float, :decimal then ", type: 'float'"
+                                   else ""
+                                 end
+       else ""
+     end
+     mapping << " }\n"
+     mappings << mapping
+   end
 -%>
               ]),
         remoteSort: true, // turn on server-side sorting
@@ -103,65 +169,99 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
 
     cm.defaultSortable = true; // all fields are sortable by default
     
-    // create the grid
-    this.gridPanel = new Ext.grid.GridPanel({
+    // button handlers
+    
+    function addButtonHandler() {
+      scaffoldPanel.selectedRecordId = undefined;
+      scaffoldPanel.activateForm('new');
+      scaffoldPanel.getFormPanel().getTopToolbar().hide();
+    }
+
+    function editButtonHandler() {
+      var selected = scaffoldPanel.getGridPanel().getSelectionModel().getSelected();
+      if(selected) {
+        scaffoldPanel.activateForm('edit');
+      } else { 
+        alert(scaffoldPanel.selectRowText);
+      }
+    }
+    
+    function deleteButtonHandler() {
+      var selected = scaffoldPanel.getGridPanel().getSelectionModel().getSelected();
+      if(selected) {
+        if(confirm(scaffoldPanel.deleteConfirmationText)) {
+           var conn = new Ext.data.Connection({
+             extraParams: scaffoldPanel.baseParams
+           });
+           conn.request({
+               url: scaffoldPanel.url + '/' + selected.data.id,
+               method: 'POST',
+               params: { _method: 'DELETE' },
+               success: function(response, options) {
+                 scaffoldPanel.reloadStore(true);
+               },
+               failure: function(response, options) {
+                 // the delete probably failed because the record is already gone, so let's reload the store
+                 scaffoldPanel.reloadStore(true);
+                 alert(scaffoldPanel.deleteFailedText);
+               }
+           });
+        }
+      } else { 
+        alert(scaffoldPanel.selectRowText);
+      }
+    }
+    
+    Ext.apply(this, {
+      items: [{
+        // add the grid panel to center region
+        region: 'center',
+        xtype: 'grid',
+        id: '<%= class_name.demodulize.underscore.dasherize %>-grid',
         ds: ds,
         cm: cm,
-        sm: new Ext.grid.RowSelectionModel({ singleSelect:true }),
-        title:  scaffoldPanel.listModeTitle,
-        height: '100%',
+        sm: new Ext.grid.RowSelectionModel({
+          singleSelect:true,
+          listeners: {
+            // populate form fields when a row is selected
+            'rowselect': function(sm, row, rec) {
+              scaffoldPanel.selectedRecordId = rec.data.id;
+              scaffoldPanel.getFormPanel().getForm().loadRecord(rec);
+            }
+          }
+        }),
         stripeRows: true,
 
         // inline toolbars
-        tbar:[{
-            text:    scaffoldPanel.newButtonLabel,
-            tooltip: scaffoldPanel.newButtonTooltip,
-            handler: function(){
-                       scaffoldPanel.activateForm('new');
-                     },
-            iconCls:'add'
-        }, '-', {
-            text:    scaffoldPanel.editButtonLabel,
-            tooltip: scaffoldPanel.editButtonTooltip,
-            handler: function(){
-                       var selected = scaffoldPanel.gridPanel.getSelectionModel().getSelected();
-                       if(selected) {
-                         scaffoldPanel.activateForm('edit');
-                       } else { 
-                         alert(scaffoldPanel.selectRowText);
-                       }
-                     },
-            iconCls:'edit'
-        },'-',{
-            text:    scaffoldPanel.deleteButtonLabel,
-            tooltip: scaffoldPanel.deleteButtonTooltip,
-            handler: function(){
-                       var selected = scaffoldPanel.gridPanel.getSelectionModel().getSelected();
-                       if(selected) {
-                         if(confirm(scaffoldPanel.deleteConfirmationText)) {
-                            var conn = new Ext.data.Connection({
-                              extraParams: scaffoldPanel.baseParams
-                            });
-                            conn.request({
-                                url: scaffoldPanel.url + '/' + selected.data.id,
-                                method: 'POST',
-                                params: { _method: 'DELETE' },
-                                success: function(response, options){ ds.load(); },
-                                failure: function(response, options){
-                                  // the delete probably failed because the record is already gone, so let's reload the store
-                                  ds.load();
-                                  alert(scaffoldPanel.deleteFailedText);
-                                }
-                            });
-                         }
-                       } else { 
-                         alert(scaffoldPanel.selectRowText);
-                       }
-                     },
-            iconCls:'remove'
-        },'->'],
+        tbar: [
+          {
+              text:    scaffoldPanel.newButtonLabel,
+              tooltip: scaffoldPanel.newButtonTooltip,
+              handler: addButtonHandler,
+              iconCls: 'add'
+          },{
+              text:    scaffoldPanel.editButtonLabel,
+              tooltip: scaffoldPanel.editButtonTooltip,
+              handler: editButtonHandler,
+              iconCls: 'edit'
+          },{
+              text:    scaffoldPanel.deleteButtonLabel,
+              tooltip: scaffoldPanel.deleteButtonTooltip,
+              handler: deleteButtonHandler,
+              iconCls: 'remove'
+          }, '->', {
+            id: '<%= class_name.demodulize.underscore.dasherize %>-form-toggle',
+            iconCls: 'details',
+            text:    scaffoldPanel.formToggleButtonLabel,
+            tooltip: scaffoldPanel.formToggleButtonTooltip,
+            enableToggle: true,
+            handler: function() {
+              scaffoldPanel.getFormPanel().toggleCollapse();
+            }
+          }, '->'
+        ],
         bbar: new Ext.PagingToolbar({
-                  pageSize: 5,
+                  pageSize: scaffoldPanel.recordsPerPage,
                   store: ds,
                   displayInfo: true,
                   displayMsg: scaffoldPanel.paginationStatusTemplate,
@@ -169,26 +269,53 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
         }),
         plugins:[new Ext.ux.grid.Search({
                     position:'top'
-                })]
-    });
+                })],
+        listeners: {
+          // show form with record on double-click
+          'rowdblclick': function(grid, row, e) { scaffoldPanel.activateForm('show'); }
+        }
 
-    // show record on double-click
-    this.gridPanel.on('rowdblclick', function(grid, row, e) {
-      scaffoldPanel.activateForm('show');
-    });
-    
-    // populate form fields when a row is selected
-    this.gridPanel.getSelectionModel().on('rowselect', function(sm, row, rec) {
-      scaffoldPanel.formPanel.getForm().loadRecord(rec);
-    });
+      },{
 
-    ds.load({params: {start: 0, limit: this.recordsPerPage} });
-    
-    // create the form
-    this.formPanel = new ExtScaffold.FormPanel({
-      baseParams: scaffoldPanel.baseParams,
-      items: [
-<% form_items = attributes.inject([]) do |items, a|
+        // add the form to east region
+        region: 'east',
+        xtype: 'extscaffoldform',
+        id: '<%= class_name.demodulize.underscore.dasherize %>-form',
+        width: 340,
+        collapseMode: 'mini',
+        collapsed: true,
+        collapsible: true,
+        titleCollapse: false,
+        hideCollapseTool: true,
+        border: false,
+        frame: true,
+        listeners: {
+          // update form-toggle button with new pressed/depressed state
+          'expand':   function() { scaffoldPanel.refreshFormToggle(); },
+          'collapse': function() { scaffoldPanel.refreshFormToggle(); },
+
+          // prevent collapse when grid is disabled
+          'beforecollapse': function() { return !scaffoldPanel.getGridPanel().disabled; }
+        },
+
+        tbar: new Ext.Toolbar({
+          hideMode: 'visibility',
+          items: ['->',
+            {
+              tooltip: scaffoldPanel.editButtonTooltip,
+              handler: editButtonHandler,
+              iconCls:'edit'
+            },{
+              tooltip: scaffoldPanel.deleteButtonTooltip,
+              handler: deleteButtonHandler,
+              iconCls:'remove'
+            }
+          ]
+        }),
+
+        baseParams: scaffoldPanel.baseParams,
+        items: [
+<%= attributes.inject([]) do |items, a|
      item =  "        { fieldLabel: scaffoldPanel.labels['#{class_name.demodulize.underscore}[#{a.name}]']"
      item << ", name: '#{class_name.demodulize.underscore}[#{a.name}]'"
      item << case a.field_type
@@ -200,68 +327,95 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
      end
      item << " }"
      items << item
-   end
--%>
-<%= form_items.join(",\n") %>
-      ],
-      modeTitles: {
-       'show': scaffoldPanel.showModeTitle,
-       'edit': scaffoldPanel.editModeTitle,
-       'new':  scaffoldPanel.newModeTitle
-      },
-    
-      onOk: function() {
-        var selected = scaffoldPanel.gridPanel.getSelectionModel().getSelected();
-        var submitOptions = {
-          url: scaffoldPanel.url,
-          waitMsg: scaffoldPanel.savingMessage,
-          params: { format: 'ext_json' },
-          success: function(form, action) {
-            ds.load();
-            scaffoldPanel.activateGrid();
-          },
-          failure: function(form, action) {
-            switch (action.failureType) {
-              case Ext.form.Action.CLIENT_INVALID:
-              case Ext.form.Action.SERVER_INVALID:
-                // validation errors are handled by the form, so we ignore them here
-                break;
-              case Ext.form.Action.CONNECT_FAILURE:
-              case Ext.form.Action.LOAD_FAILURE:
-                // these might be 404 Not Found or some 5xx Server Error
-                alert(scaffoldPanel.saveFailedText);
-                break;
+   end.join(",\n")
+%>
+        ],
+
+        onOk: function() {
+          var selected = scaffoldPanel.getGridPanel().getSelectionModel().getSelected();
+
+          var submitOptions = {
+            url: scaffoldPanel.url,
+            waitMsg: scaffoldPanel.savingMessage,
+            params: { format: 'ext_json' },
+            success: function(form, action) {
+              // remember assigned record id (relevant when creating new records,
+              // will match the known record id otherwise)
+              scaffoldPanel.selectedRecordId = action.result.data['<%= class_name.demodulize.underscore %>[id]'];
+              scaffoldPanel.reloadStore(true);
+            },
+            failure: function(form, action) {
+              switch (action.failureType) {
+                case Ext.form.Action.CLIENT_INVALID:
+                case Ext.form.Action.SERVER_INVALID:
+                  // validation errors are handled by the form, so we ignore them here
+                  break;
+                case Ext.form.Action.CONNECT_FAILURE:
+                case Ext.form.Action.LOAD_FAILURE:
+                  // these might be 404 Not Found or some 5xx Server Error
+                  alert(scaffoldPanel.saveFailedText);
+                  break;
+              }
             }
+          };
+
+          scaffoldPanel.getFormPanel().getTopToolbar().show();
+
+          if (scaffoldPanel.getFormPanel().currentMode == 'edit') {
+            // set up request for Rails create action
+            submitOptions.params._method = 'PUT';
+            submitOptions.url = submitOptions.url + '/' + selected.data.id;
           }
-        };
+          scaffoldPanel.getFormPanel().getForm().submit(submitOptions);
+        },
 
-        if (scaffoldPanel.formPanel.currentMode == 'edit') {
-          // set up request for Rails create action
-          submitOptions.params._method = 'PUT';
-          submitOptions.url = submitOptions.url + '/' + selected.data.id;
+        onCancel: function() {
+          var sm = scaffoldPanel.getGridPanel().getSelectionModel();
+          var fp = scaffoldPanel.getFormPanel();
+
+          scaffoldPanel.getFormPanel().getTopToolbar().show();
+          scaffoldPanel.activateGrid();
+          
+          // cancel from show mode should always collapse the form-panel (button label: Close)
+          if (fp.currentMode == 'show') fp.collapse();
+          
+          fp.setFormMode('show');
+          if (sm.hasSelection()) {
+            fp.getForm().loadRecord(sm.getSelected()); // reload previous record version
+          } else {
+            fp.getForm().reset();
+          }
         }
-        scaffoldPanel.formPanel.getForm().submit(submitOptions);
-      },
-      onCancel: function() {
-        scaffoldPanel.activateGrid();
-      }
+      }]
     });
-
-    ExtScaffold.<%= class_name.gsub(/::/,'.') %>.superclass.constructor.call(this, Ext.applyIf(config, {
-      layout:     'slide',
-      layoutConfig: {
-          easing: 'easeOut',
-          duration: .75
-      },
-      activeItem: 0,
-      height:     '100%',
-      defaults:   { border: false, frame: false },
-      items: [
-        scaffoldPanel.gridPanel, // card 0 = grid
-        scaffoldPanel.formPanel  // card 1 = form
-      ]
-    }));
     
+    // try to re-establish selection after datastore load
+    ds.on('load', function() {
+      if (this.selectedRecordId) {
+        var matchingRecords = ds.query('id', this.selectedRecordId);
+        if (matchingRecords && matchingRecords.length > 0) {
+          this.getGridPanel().getSelectionModel().selectRecords([matchingRecords.first()]);
+        } else {
+          this.selectedRecordId = undefined; 
+          this.resetForm(false);
+        }
+      }
+    }, this);
+    
+    // make sure form toggle reflects form collapsed state even on initial load
+    ds.on('load', function() {
+      this.refreshFormToggle();
+      this.resetForm(true);
+    }, this, { single:true });
+
+    ExtScaffold.<%= class_name.gsub(/::/,'.') %>.superclass.initComponent.apply(this, arguments);
+  },
+  
+  onRender: function() {
+    ExtScaffold.<%= class_name.gsub(/::/,'.') %>.superclass.onRender.apply(this, arguments);
+
+    // reset form and trigger initial data load
+    this.getStore().load({params: {start: 0, limit: this.recordsPerPage} });
   }
 });
 

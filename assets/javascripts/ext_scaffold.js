@@ -1,8 +1,9 @@
 Ext.namespace('ExtScaffold');
-Ext.form.Field.prototype.msgTarget = 'side';
+Ext.form.Field.prototype.msgTarget = 'qtip';
 
 // Custom FormPanel supporting different behaviour for show/edit/new operating modes
 ExtScaffold.FormPanel = Ext.extend(Ext.FormPanel, {
+
   //
   // properties (all Ext.FormPanel properties may be given as well)
   //
@@ -12,24 +13,38 @@ ExtScaffold.FormPanel = Ext.extend(Ext.FormPanel, {
   cancelButton: null,
   currentMode: '',
 
-  // the form titles for each mode
-  modeTitles: {
-   'show': 'Show Resource',
-   'edit': 'Edit Resource',
-   'new':  'Create Resource'
-  },
-  
   // the button texts for each mode, ok property may be false to hide okButton
   modeButtonTexts: {
-    'show': { ok: false, cancel: 'Back' },
+    'show': { ok: false, cancel: 'Close' },
     'edit': { ok: 'Save', cancel: 'Cancel' },
     'new':  { ok: 'Create', cancel: 'Cancel' }
   },
   
-  // optional callbacks (default to no-ops)
+  // callbacks (default to no-ops)
   onCancel: Ext.emptyFn,
   onOk:     Ext.emptyFn,
   
+  // defaults for (superclass) config
+  cls:           'ext-scaffold-form-panel',
+  labelWidth:    100,               // default label width
+  defaults:      { width: '94%' },  // field width
+  buttonAlign:   'right',
+  waitMsgTarget: true,
+  bodyStyle:     'padding:10px 10px 0',
+  defaultType:   'textfield',
+  
+  //
+  // initComponent
+  //
+  initComponent : function() {
+    ExtScaffold.FormPanel.superclass.initComponent.apply(this, arguments);
+    var formPanel = this; // save scope for later reference
+    
+    // add buttons to FormPanel -> accessible as properties
+    this.cancelButton = this.addButton({ text: 'Cancel', handler: formPanel.onCancel });
+    this.okButton     = this.addButton({ text: 'Ok',     handler: formPanel.onOk, type: 'submit' });
+  },
+
   //
   // public instance methods
   //
@@ -39,10 +54,8 @@ ExtScaffold.FormPanel = Ext.extend(Ext.FormPanel, {
     });
   },
   
-  setFormMode: function (mode) {
+  setFormMode: function(mode) {
     if (mode === 'new') this.getForm().reset(); // empty all fields
-
-    this.setTitle(this.modeTitles[mode] || 'Ext Scaffold Form');
 
     // disable fields and hide okButton when modeButtonTexts for ok is false
     this.setFieldsDisabled(!this.modeButtonTexts[mode].ok);
@@ -54,90 +67,17 @@ ExtScaffold.FormPanel = Ext.extend(Ext.FormPanel, {
     
     // update currentMode property
     this.currentMode = mode;
-  },
-  
-  //
-  // constructor
-  //
-  constructor: function(config) {
-    if (config === undefined) config = {}; // set default for optional config param
-    var formPanel = this;                  // save scope for later reference
-    
-    // register callback config
-    if (config.onCancel) this.onCancel = config.onCancel;
-    if (config.onOk)     this.onOk     = config.onOk;
-    
-    // create from buttons -> accessible as properties
-    this.okButton     = new Ext.Button({ text: 'Ok',     handler: formPanel.onOk, type: 'submit' });
-    this.cancelButton = new Ext.Button({ text: 'Cancel', handler: formPanel.onCancel });
-    
-    // call superclass constructor to create actual FormPanel
-    ExtScaffold.FormPanel.superclass.constructor.call(this, Ext.applyIf(config, {
-      title:         '[form-title]', // have a title (to be updated later)
-      labelWidth:    100,            // default label width
-      defaults:      { width: 300 }, // default field width
-      waitMsgTarget: true,
-      autoScroll:    true,
-      bodyStyle:     'padding:10px 10px 0',
-      defaultType:   'textfield',
-      bbar:          [ formPanel.cancelButton, formPanel.okButton ]
-    }));
   }
 });
 
+// register xtype
+Ext.reg('extscaffoldform', ExtScaffold.FormPanel);
 
-/*
- * from: http://slidelayout.freehostia.com/grid3.js / 
- *       http://extjs.com/forum/showthread.php?p=233741
- *
- * Ext JS Library 2.1
- * Copyright(c) 2006-2008, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
-Ext.layout.SlideLayout = Ext.extend(Ext.layout.FitLayout, {
-  
-  deferredRender : false,
-  
-  renderHidden : false,
-  easing: 'none',
-  duration: .5,
-  opacity: 1,
-  
-  setActiveItem : function(itemInt){
-    if (typeof(itemInt) == 'string') { itemInt = this.container.items.keys.indexOf(itemInt); }
-    else if (typeof(itemInt) == 'object') { itemInt = this.container.items.items.indexOf(itemInt); }
-    var item = this.container.getComponent(itemInt);
-    if (this.activeItem != item) {
-      if (this.activeItem) {
-        if (item && (!item.rendered || !this.isValidParent(item, this.container))) {
-          this.renderItem(item, itemInt, this.container.getLayoutTarget()); item.show();
-        }
-        var s = [this.container.body.getX() - this.container.body.getWidth(), this.container.body.getX() + this.container.body.getWidth()];
-        this.activeItem.el.shift({ duration: this.duration, easing: this.easing, opacity: this.opacity, x:(this.activeItemNo < itemInt ? s[0] : s[1] )});
-        item.el.setY(this.container.body.getY());
-        item.el.setX((this.activeItemNo < itemInt ? s[1] : s[0] ));
-        item.el.shift({ duration: this.duration, easing: this.easing, opacity: 1, x:this.container.body.getX()});
-      }
-      this.activeItemNo = itemInt;
-      this.activeItem = item;
-      this.layout();
-    }
-  },
-  
-  renderAll : function(ct, target){
-    if (this.deferredRender) {
-      this.renderItem(this.activeItem, undefined, target);
-    } else {
-      Ext.layout.CardLayout.superclass.renderAll.call(this, ct, target);
-    }
-  }
-});
-Ext.Container.LAYOUTS['slide'] = Ext.layout.SlideLayout;
-
+//
+// bundled Ext user extensions
+//
 Ext.namespace('Ext.ux'); 
+
 /**
  * Ext.ux.form.DateTime Extension Class for Ext 2.x Library
  *

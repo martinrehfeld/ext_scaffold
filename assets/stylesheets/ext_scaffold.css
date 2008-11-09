@@ -1,16 +1,36 @@
-.add {
+.ext-scaffold .add {
   background-image:url(../ext/examples/shared/icons/fam/add.gif) !important;
 }
 
-.remove {
+.ext-scaffold .remove {
   background-image:url(../ext/examples/shared/icons/fam/delete.gif) !important;
 }
 
-.edit {
-  background-image:url(../ext/examples/shared/icons/fam/cog.png) !important;
+.ext-scaffold .edit {
+  background-image:url(../ext/examples/shared/icons/fam/cog.png);
+}
+* html .ext-scaffold .edit { /* IE6 needs to be tweaked to display PNG transparency */
+  background-image: none !important;
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ext/examples/shared/icons/fam/cog.png", sizingMethod="crop");
 }
 
-.minutecss{
+.ext-scaffold .details {
+  background-image:url(../ext/examples/grid/details.gif) !important;
+}
+
+.ext-scaffold-form-panel .x-panel-mc {
+  padding-top: 0px !important;
+}
+.ext-scaffold-form-panel .x-toolbar {
+  border-bottom: 0 none !important;
+  background: transparent !important;
+  padding-right: 6px !important;
+}
+.ext-scaffold-form-panel .x-panel-btns-ct {
+  padding-bottom: 0px !important;
+}
+
+.minutecss {
   padding:4px;
   height:100%;
   border-top: 1px solid #a3bad9;
