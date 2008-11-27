@@ -41,7 +41,9 @@ Example
 =======
 
 `./script/generate ext_scaffold post` # no attributes, view will be anemic
+
 `./script/generate ext_scaffold post title:string body:text published:boolean`
+
 `./script/generate ext_scaffold purchase order_id:integer amount:decimal`
 
 
