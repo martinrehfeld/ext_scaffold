@@ -321,7 +321,7 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
      item << case a.field_type
        when :text_field      then [:integer, :float, :decimal].include?(a.type) ? ", xtype: 'numberfield'" : ", xtype: 'textfield'"
        when :text_area       then ", xtype: 'textarea'"
-       when :date_select     then ", xtype: 'datefield'"
+       when :date_select     then ", xtype: 'xdatefield'"
        when :datetime_select then ", xtype: 'xdatetime'"
        when :check_box       then ", xtype: 'checkbox', inputValue: '1' }, { xtype: 'hidden', name: '#{class_name.demodulize.underscore}[#{a.name}]', value: '0'"
      end
