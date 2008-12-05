@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + '/test_helper'
-require 'test/unit'
 
 class StubModel < ActiveRecord::Base
   def self.columns # make AR happy even without existing DB table
