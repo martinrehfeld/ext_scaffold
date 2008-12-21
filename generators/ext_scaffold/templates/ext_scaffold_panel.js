@@ -111,7 +111,7 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
   },
   
   reloadStore: function(resetForm) {
-    this.getStore().load();
+    this.getStore().reload();
     if (resetForm) this.resetForm(true);
   },
   
