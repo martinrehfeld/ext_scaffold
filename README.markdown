@@ -1,5 +1,5 @@
-ExtScaffold
-===========
+Ext Scaffold Reloaded
+=====================
 
 Scaffolds an entire resource, from model and migration to controller and
 views, along with a full test suite, just like the standard Rails scaffold
