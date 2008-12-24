@@ -1,40 +1,40 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<title>martinrehfeld/ext_scaffold @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #b8eb52;
-		  font-family: "helvetica"; 
-  		color: #000000;
+  <title>martinrehfeld/ext_scaffold @ GitHub</title>
+  
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #ffffff;
+      font-family: "helvetica"; 
+      color: #818181;
     }
     #container {
       margin: 0 auto;
       width: 700px;
     }
-		h1 { font-size: 3.8em; color: #4714ad; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #4714ad; }
-    h3 { text-align: center; color: #4714ad; }
-    a { color: #4714ad; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    h1 { font-size: 3.8em; color: #aec740; margin-bottom: 3px; }
+    h1 .small { font-size: 0.4em; }
+    h1 a { text-decoration: none; color: #aec740 }
+    h2 { font-size: 1.5em; color: #409fa3; }
+    h3 { text-align: center; color: #409fa3; }
+    a { color: #aec740; }
+    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic; color: #409fa3 }
     .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
+    pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
+  </style>
+  
 </head>
 
 <body>
-  <a href="http://github.com/martinrehfeld/ext_scaffold"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+  <a href="http://github.com/martinrehfeld/ext_scaffold"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub" /></a>
   
   <div id="container">
 
@@ -46,24 +46,34 @@
     </div>
       
     <h1><a href="http://github.com/martinrehfeld/ext_scaffold">Ext Scaffold Reloaded</a> 
-      <span class="small">by <a href="http://github.com/martinrehfeld">martinrehfeld</a></small></h1>
+      <span class="small">by <a href="http://github.com/martinrehfeld">Martin Rehfeld</a></small></h1>
 
     <div class="description">
-      Generate full-featured scaffolds using the ExtJS framework.
+      Generate full-featured Rails scaffolds using the ExtJS framework.
     </div>
 
-    <p>The Ext Scaffold Generator Plugin can be viewed as a drop-in replacement for Rails’ standard Resource Generator. Accepting the very same options, it will generate views using data grid and form components from the Ext JS Javascript GUI framework as well as a controller acting as an Ext-compatible JSON web service. The generated code can be used as a starting point for further implementation and outlines solutions on how to integrate the Ext JS library with Rails as a backend.</p><h2>Dependencies</h2>
-<p>ExtJS: http://www.extjs.com/products/extjs</p>
-<h2>Install</h2>
-<p>* script/plugin install git://github.com/martinrehfeld/ext_scaffold.git
-* download ExtJS and extract into #{RAILS_ROOT}/public/ext</p>
-<h2>License</h2>
-<p>MIT</p>
-<h2>Authors</h2>
-<p>Martin Rehfeld (martin.rehfeld@glnetworks.de)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Martin Rehfeld (martin.rehfeld@glnetworks.de)<br/>      </p>
+    <p>The Ext Scaffold Generator Plugin can be viewed as a drop-in replacement for Rails’ standard Resource Generator. Accepting the very same options, it will generate views using data grid and form components from the Ext JS Javascript GUI framework as well as a controller acting as an Ext-compatible JSON web service. The generated code can be used as a starting point for further implementation and outlines solutions on how to integrate the Ext JS library with Rails as a backend.</p>
 
+    <h2>Dependencies</h2>
+    <ul>
+      <li>ExtJS: <a href="http://www.extjs.com/products/extjs">http://www.extjs.com/products/extjs</a></li>
+      <li>Rails: <a href="http://www.rubyonrails.org">http://www.rubyonrails.org</a></li>
+    </ul>
+
+    <h2>Install</h2>
+    <ol>
+      <li><code>script/plugin install git://github.com/martinrehfeld/ext_scaffold.git</code></li>
+      <li>download ExtJS and extract into #{RAILS_ROOT}/public/ext</li>
+    </ol>
+
+    <h2>License</h2>
+    <p>MIT</p>
+
+    <h2>Authors</h2>
+    <p>Martin Rehfeld (martin.rehfeld@glnetworks.de)</p>
+
+    <h2>Contact</h2>
+    <p>Martin Rehfeld (martin.rehfeld@glnetworks.de)</p>
 
     <h2>Download</h2>
     <p>
@@ -83,13 +93,14 @@
   </div>
 
   <script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-1212890");
-pageTracker._trackPageview();
-} catch(err) {}</script>
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+  <script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker("UA-1212890");
+      pageTracker._trackPageview();
+    } catch(err) {}
+  </script>
 </body>
 </html>
