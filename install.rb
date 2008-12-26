@@ -11,7 +11,7 @@ for path in [ ['javascripts', 'ext_scaffold.js'],
     if FileUtils.cmp(source, destination)
       puts "identical"
     else
-      print "exits, overwrite [yN]?"
+      print "exists, overwrite [yN]?"
       if gets("\n").chomp.downcase.first == 'y'
         FileUtils.cp source, destination
       else
