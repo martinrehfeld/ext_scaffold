@@ -12,7 +12,7 @@ for path in [ ['javascripts', 'ext_scaffold.js'],
       puts "identical"
     else
       print "exists, overwrite [yN]?"
-      if gets("\n").chomp.downcase.first == 'y'
+      if STDIN.gets("\n").chomp.downcase[0,1] == 'y'
         FileUtils.cp source, destination
       else
         puts "    ...skipped"; next
