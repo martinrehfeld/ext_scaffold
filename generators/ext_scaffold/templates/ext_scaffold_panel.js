@@ -27,6 +27,8 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
   paginationNoRecordsText: 'No records found',
   savingMessage: 'Saving...',
   saveFailedText: 'Save operation failed. The record might have been deleted by someone else.',
+  errorMessageBoxTitle: 'Error',
+  confirmationMessageBoxTitle: 'Confirmation',
 
   //
   // custom properties
@@ -182,33 +184,35 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
       if(selected) {
         scaffoldPanel.activateForm('edit');
       } else { 
-        alert(scaffoldPanel.selectRowText);
+        Ext.Msg.alert(scaffoldPanel.errorMessageBoxTitle,scaffoldPanel.selectRowText);
       }
     }
     
     function deleteButtonHandler() {
       var selected = scaffoldPanel.getGridPanel().getSelectionModel().getSelected();
       if(selected) {
-        if(confirm(scaffoldPanel.deleteConfirmationText)) {
-           var conn = new Ext.data.Connection({
-             extraParams: scaffoldPanel.baseParams
-           });
-           conn.request({
-               url: scaffoldPanel.url + '/' + selected.data.id,
-               method: 'POST',
-               params: { _method: 'DELETE' },
-               success: function(response, options) {
-                 scaffoldPanel.reloadStore(true);
-               },
-               failure: function(response, options) {
-                 // the delete probably failed because the record is already gone, so let's reload the store
-                 scaffoldPanel.reloadStore(true);
-                 alert(scaffoldPanel.deleteFailedText);
-               }
-           });
-        }
+        Ext.Msg.confirm(scaffoldPanel.confirmationMessageBoxTitle,scaffoldPanel.deleteConfirmationText, function(btn) {
+          if (btn == 'yes') {
+            var conn = new Ext.data.Connection({
+              extraParams: scaffoldPanel.baseParams
+            });
+            conn.request({
+              url: scaffoldPanel.url + '/' + selected.data.id,
+              method: 'POST',
+              params: { _method: 'DELETE' },
+              success: function(response, options) {
+                scaffoldPanel.reloadStore(true);
+              },
+              failure: function(response, options) {
+                // the delete probably failed because the record is already gone, so let's reload the store
+                scaffoldPanel.reloadStore(true);
+                Ext.Msg.alert(scaffoldPanel.errorMessageBoxTitle,scaffoldPanel.deleteFailedText);
+              }
+            });
+          }
+        });
       } else { 
-        alert(scaffoldPanel.selectRowText);
+        Ext.Msg.alert(scaffoldPanel.errorMessageBoxTitle,scaffoldPanel.selectRowText);
       }
     }
     
@@ -353,7 +357,7 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
                 case Ext.form.Action.CONNECT_FAILURE:
                 case Ext.form.Action.LOAD_FAILURE:
                   // these might be 404 Not Found or some 5xx Server Error
-                  alert(scaffoldPanel.saveFailedText);
+                  Ext.Msg.alert(scaffoldPanel.errorMessageBoxTitle,scaffoldPanel.saveFailedText);
                   break;
               }
             }
