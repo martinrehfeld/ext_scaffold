@@ -181,16 +181,16 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
 
     function editButtonHandler() {
       var selected = scaffoldPanel.getGridPanel().getSelectionModel().getSelected();
-      if(selected) {
+      if (selected) {
         scaffoldPanel.activateForm('edit');
-      } else { 
+      } else {
         Ext.Msg.alert(scaffoldPanel.errorMessageBoxTitle,scaffoldPanel.selectRowText);
       }
     }
     
     function deleteButtonHandler() {
       var selected = scaffoldPanel.getGridPanel().getSelectionModel().getSelected();
-      if(selected) {
+      if (selected) {
         Ext.Msg.confirm(scaffoldPanel.confirmationMessageBoxTitle,scaffoldPanel.deleteConfirmationText, function(btn) {
           if (btn == 'yes') {
             var conn = new Ext.data.Connection({
@@ -211,7 +211,7 @@ ExtScaffold.<%= class_name.gsub(/::/,'.') %> = Ext.extend(Ext.Panel, {
             });
           }
         });
-      } else { 
+      } else {
         Ext.Msg.alert(scaffoldPanel.errorMessageBoxTitle,scaffoldPanel.selectRowText);
       }
     }
