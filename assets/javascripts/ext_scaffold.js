@@ -53,6 +53,12 @@ ExtScaffold.FormPanel = Ext.extend(Ext.FormPanel, {
       item.setDisabled(fieldsDisabled);
     });
   },
+
+  clearAllStoreFilters: function() {
+    this.getForm().items.each(function(item) {
+      if (item.store && item.store.clearFilter) item.store.clearFilter(true);
+    });
+  },
   
   setFormMode: function(mode) {
     if (mode === 'new') this.getForm().reset(); // empty all fields
