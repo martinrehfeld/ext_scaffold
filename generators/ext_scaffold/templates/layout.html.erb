@@ -5,11 +5,11 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title><%= controller_class_name %></title>
-  <%%= stylesheet_link_tag    "ext_scaffold", "../ext/resources/css/ext-all.css" %>
-  <%%= javascript_include_tag "../ext/adapter/ext/ext-base.js",
-                             Rails.env.development? ? "../ext/ext-all-debug.js" : "../ext/ext-all.js",
+  <%%= stylesheet_link_tag    "ext_scaffold", "/ext/resources/css/ext-all.css" %>
+  <%%= javascript_include_tag "/ext/adapter/ext/ext-base.js",
+                             Rails.env.development? ? "/ext/ext-all-debug.js" : "/ext/ext-all.js",
                              "ext_scaffold.js",
-                             "../ext/build/locale/ext-lang-en.js" %>
+                             "/ext/build/locale/ext-lang-en.js" %>
   <%% javascript_tag do %>
     Ext.BLANK_IMAGE_URL = '<%%= image_path '/ext/resources/images/default/s.gif' %>';
   <%% end %>
