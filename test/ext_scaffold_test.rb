@@ -16,7 +16,7 @@ class ExtScaffoldTest < Test::Unit::TestCase
 
     # install ext_scaffold plugin
     FileUtils.mkdir_p './ext_scaffold_demo/vendor/plugins/ext_scaffold'
-    FileUtils.cp_r %w(init.rb install.rb uninstall.rb ./assets ./generators ./lib ./tasks), './ext_scaffold_demo/vendor/plugins/ext_scaffold'
+    FileUtils.cp_r %w(init.rb install.rb uninstall.rb ./generators ./lib ./tasks), './ext_scaffold_demo/vendor/plugins/ext_scaffold'
     `cd ext_scaffold_demo/vendor/plugins/ext_scaffold; ruby ../../../script/runner ./install.rb`
     assert_equal 0, $?
 
