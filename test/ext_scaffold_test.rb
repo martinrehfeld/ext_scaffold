@@ -57,7 +57,7 @@ end
       ext_base_path = './ext_scaffold_demo/public/ext'
       FileUtils.ln_s ENV['EXTJS_LOCATION'], ext_base_path
       # check availability of neccessary files
-      %w(examples/shared/icons/fam/add.gif examples/shared/icons/fam/delete.gif examples/shared/icons/fam/cog.png resources/images/default/shared/glass-bg.gif).each do |f|
+      %w(examples/shared/icons/fam/add.gif examples/shared/icons/fam/delete.gif examples/shared/icons/fam/cog.png examples/grid/details.gif examples/grid-filtering/img/find.png resources/images/default/shared/glass-bg.gif).each do |f|
         assert File.readable?(File.join(ext_base_path,f)), "#{f} is not availble in your Ext installation"
       end
     else
