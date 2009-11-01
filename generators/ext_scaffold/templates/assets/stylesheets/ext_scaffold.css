@@ -19,11 +19,11 @@
 }
 
 .ext-scaffold .ux-icon-search {
-  background-image:url(/ext/examples/grid-filtering/img/find.png) !important;
+  background-image:url(/images/ext_scaffold/find.png) !important;
 }
 * html .ext-scaffold .ux-icon-search { /* IE6 needs to be tweaked to display PNG transparency */
   background-image: none !important;
-  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ext/examples/grid-filtering/img/find.png", sizingMethod="crop");
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/images/ext_scaffold/find.png", sizingMethod="crop");
 }
 
 .ext-scaffold-form-panel .x-panel-mc {

@@ -9,7 +9,7 @@
   <%%= javascript_include_tag "/ext/adapter/ext/ext-base.js",
                              Rails.env.development? ? "/ext/ext-all-debug.js" : "/ext/ext-all.js",
                              "ext_scaffold.js",
-                             "/ext/build/locale/ext-lang-en.js" %>
+                             "/ext/src/locale/ext-lang-en.js" %>
   <%% javascript_tag do %>
     Ext.BLANK_IMAGE_URL = '<%%= image_path '/ext/resources/images/default/s.gif' %>';
   <%% end %>

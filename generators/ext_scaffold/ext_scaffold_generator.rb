@@ -77,6 +77,7 @@ class ExtScaffoldGenerator < Rails::Generator::NamedBase
       m.template('assets/javascripts/ext_scaffold.js', 'public/javascripts/ext_scaffold.js')
       m.template('assets/images/arrowLeft.gif', 'public/images/ext_scaffold/arrowLeft.gif')
       m.template('assets/images/arrowRight.gif', 'public/images/ext_scaffold/arrowRight.gif')
+      m.template('assets/images/find.png', 'public/images/ext_scaffold/find.png')
       m.template('assets/stylesheets/ext_scaffold.css', 'public/stylesheets/ext_scaffold.css')
 
       # tests

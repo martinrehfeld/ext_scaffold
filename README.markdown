@@ -25,10 +25,10 @@ Prerequisites
 
 You need to download the Ext Javascript framework from
 
-`http://extjs.com/download`,
+`http://www.extjs.com/products/extjs/download.php`,
 
 and unzip it into `#{RAILS_ROOT}/public/ext`. Ext_scaffold was tested
-against version 2.2 of the ExtJS framework.
+against version 3.0 of the ExtJS framework.
 
 
 Installation
