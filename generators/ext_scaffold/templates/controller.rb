@@ -41,8 +41,7 @@ protected
   end
   
   def find_<%= controller_class_name.demodulize.tableize %>
-    pagination_state = update_pagination_state_with_params!(<%= class_name %>)
-    @<%= controller_class_name.demodulize.tableize %> = <%= class_name %>.find(:all, options_from_pagination_state(pagination_state).merge(options_from_search(<%= class_name %>)))
+    @<%= controller_class_name.demodulize.tableize %> = <%= class_name %>.find(:all, pagination_state.merge(options_from_search(<%= class_name %>)))
   end
 
 end
