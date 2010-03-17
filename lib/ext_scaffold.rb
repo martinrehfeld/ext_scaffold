@@ -3,7 +3,7 @@ module ExtScaffold
 protected
 
   def pagination_state
-    {}.merge(:offset=>params.delete(:start)).merge(:limit=>params.delete(:limit))
+    { :offset => params.delete(:start), :limit => params.delete(:limit) }
   end
 
   def options_from_search(restraining_model = nil)
