@@ -24,6 +24,14 @@ protected
     end
   end
 
-private
+  # controllers generated with ExtScaffold prior 5ae8b9177f5fab56bec8714faf687ef7129332b1
+  # need this for backward compatibility
+  def options_from_pagination_state(state)
+    state
+  end
+  def update_pagination_state_with_params!(restraining_model = nil)
+    pagination_state
+  end
+  # end of deprecated compatibility methods
 
 end
